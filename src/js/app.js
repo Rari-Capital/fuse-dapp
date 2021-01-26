@@ -366,9 +366,9 @@ App = {
     else liquidationIncentive = Web3.utils.toBN((new Big(liquidationIncentive)).mul((new Big(10)).pow(18)).toFixed(0));
     var priceOracle = $('#DeployPoolPriceOracle').val();
     // TODO: Correct public PreferredPriceOracle and public UniswapView addresses
-    if (priceOracle === "PreferredPriceOracle" && confirm("Would you like to use the public PreferredPriceOracle? There is no reason to say no unless you need to use SushiSwap (or another Uniswap V2 fork) or you need to set fixed prices for tokens other than WETH.")) priceOracle = "0xdE7E1E556170638dB17a4733d545a3077614ad2d";
-    if (priceOracle === "UniswapView" && confirm("Would you like to use the public UniswapView? There is no reason to say no unless you need to use SushiSwap (or another Uniswap V2 fork) or you need to set fixed prices for tokens other than WETH.")) priceOracle = "0xdE7E1E556170638dB17a4733d545a3077614ad2d";
-    if (priceOracle === "UniswapAnchoredView" && confirm("Would you like to use the public UniswapAnchoredView? Say yes to use Coinbase Pro as a reporter, and say no to user another price oracle as a reporter.")) priceOracle = "0xdE7E1E556170638dB17a4733d545a3077614ad2d";
+    if (priceOracle === "PreferredPriceOracle" && Fuse.PUBLIC_PREFERRED_PRICE_ORACLE_CONTRACT_ADDRESS && confirm("Would you like to use the public PreferredPriceOracle? There is no reason to say no unless you need to use SushiSwap (or another Uniswap V2 fork) or you need to set fixed prices for tokens other than WETH.")) priceOracle = Fuse.PUBLIC_PREFERRED_PRICE_ORACLE_CONTRACT_ADDRESS;
+    if (priceOracle === "UniswapView" && Fuse.PUBLIC_UNISWAP_VIEW_CONTRACT_ADDRESS && confirm("Would you like to use the public UniswapView? There is no reason to say no unless you need to use SushiSwap (or another Uniswap V2 fork) or you need to set fixed prices for tokens other than WETH.")) priceOracle = Fuse.PUBLIC_UNISWAP_VIEW_CONTRACT_ADDRESS;
+    if (priceOracle === "UniswapAnchoredView" && Fuse.PUBLIC_UNISWAP_ANCHORED_VIEW_CONTRACT_ADDRESS && confirm("Would you like to use the public UniswapAnchoredView? Say yes to use Coinbase Pro as a reporter, and say no to user another price oracle as a reporter.")) priceOracle = Fuse.PUBLIC_UNISWAP_ANCHORED_VIEW_CONTRACT_ADDRESS;
     var reporter = null;
     if (priceOracle === "UniswapAnchoredView") reporter = prompt("What reporter address would you like to use? (Coinbase Pro is the default.)", "0xfCEAdAFab14d46e20144F48824d0C09B1a03F2BC");
     var isPrivate = parseInt($('#DeployPoolPrivate').val()) > 0;
