@@ -20,6 +20,7 @@ App = {
   fuse: null,
   contracts: {},
   comptrollerAbi: null,
+  cEtherAbi: null,
   cErc20Abi: null,
   erc20Abi: null,
 
@@ -293,8 +294,12 @@ App = {
       App.comptrollerAbi = data;
     });
 
-    $.getJSON('abi/CErc20.json?v=1600737538', function(data) {
+    $.getJSON('abi/CErc20.json?v=1611699241', function(data) {
       App.cErc20Abi = data;
+    });
+
+    $.getJSON('abi/CEther.json?v=1611699241', function(data) {
+      App.cEtherAbi = data;
     });
 
     $.getJSON('abi/ERC20.json?v=1600737538', function(data) {
@@ -660,7 +665,7 @@ App = {
         var underlyingDecimals = $(this).closest('tr').data("decimals");
         $('#modal-deposit #DepositAmount').val((new Big(balance)).div((new Big(10)).pow(underlyingDecimals)).toFixed());
         $('#modal-deposit #DepositCurrencyName').val($(this).closest('tr').data("name"));
-        $('#modal-deposit #DepositCurrencySymbol option').text($(this).closest('tr').data("symbol"));
+        $('#modal-deposit #DepositCurrencySymbol option').text(underlyingSymbol);
         $('#modal-deposit').modal('show');
         var cToken = new App.web3.eth.Contract(underlyingSymbol === "ETH" ? App.cEtherAbi : App.cErc20Abi, $(this).closest('tr').data("ctoken"));
       
