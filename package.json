@@ -1,0 +1,29 @@
+{
+  "name": "fuse-dapp",
+  "version": "0.1.0",
+  "description": "dApp for Fuse by Rari Capital.",
+  "scripts": {
+    "build": "babel src/js/app.js --out-file src/js/app-compiled.js",
+    "dev": "lite-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rari-Capital/fuse-dapp.git"
+  },
+  "author": {
+    "name": "David Lucid",
+    "email": "david@rari.capital",
+    "url": "https://github.com/davidlucid"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/Rari-Capital/fuse-dapp/issues"
+  },
+  "homepage": "https://github.com/Rari-Capital/fuse-dapp#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.10.3",
+    "@babel/core": "^7.10.3",
+    "@babel/preset-env": "^7.10.3",
+    "lite-server": "^2.5.4"
+  }
+}
