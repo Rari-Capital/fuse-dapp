@@ -328,11 +328,10 @@ App = {
       }
 
       // Get user's Fuse pools
-      // TODO: Below
-      /* if (App.contracts.FusePoolDirectory) {
+      if (App.contracts.FusePoolDirectory) {
         App.getMyFusePools();
         if (!App.intervalGetMyFusePools) App.intervalGetMyFusePools = setInterval(App.getMyFusePools, 5 * 60 * 1000);
-      } */
+      }
     });
 
     $(document).on('change', '#DeployAssetPool, #DeployAssetUnderlying', async function() {
