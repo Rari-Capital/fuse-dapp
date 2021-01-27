@@ -555,55 +555,60 @@ App = {
         borrower.debt.sort((a, b) => b.borrowBalanceEth.gt(a.borrowBalanceEth));
         borrower.collateral.sort((a, b) => b.supplyBalanceEth.gt(a.supplyBalanceEth));
 
-        // Get liquidation amount
+        // Get max liquidation value across all borrows
         borrower.maxLiquidationValue = new Big(borrower.totalBorrow).mul(closeFactor).div(1e18);
+
+        // Get liquidation amount
+        var debtAmount = new Big(borrower.debt[0].borrowBalance).div((new Big(10)).pow(parseInt(borrower.debt[0].underlyingDecimals)));
+        var liquidationAmount = debtAmount.mul(closeFactor);
         const underlyingDebtPrice = (new Big(borrower.debt[0].underlyingPrice)).div((new Big(10)).pow(36 - borrower.debt[0].underlyingDecimals));
         const underlyingCollateralPrice = (new Big(borrower.collateral[0].underlyingPrice)).div((new Big(10)).pow(36 - borrower.collateral[0].underlyingDecimals));
-        const liquidationAmount = borrower.maxLiquidationValue.div(underlyingDebtPrice);
+        var liquidationValueEth = liquidationAmount.mul(underlyingDebtPrice);
 
         // Get seize amount
-        const seizeAmountEth = borrower.maxLiquidationValue.mul(liquidationIncentive);
-        const seizeAmount = seizeAmountEth.div(underlyingCollateralPrice);
+        var seizeAmountEth = liquidationValueEth.mul(liquidationIncentive);
+        var seizeAmount = seizeAmountEth.div(underlyingCollateralPrice);
+
+        // Check if actual collateral is too low to seize seizeAmount; if so, recalculate liquidation amount
+        const actualCollateral = (new Big(borrower.collateral[0].supplyBalance)).div((new Big(10)).pow(parseInt(borrower.collateral[0].underlyingDecimals)));
+        
+        if (seizeAmount.gt(actualCollateral)) {
+          seizeAmount = actualCollateral;
+          seizeAmountEth = seizeAmount.mul(underlyingCollateralPrice);
+          liquidationValueEth = seizeAmountEth.div(liquidationIncentive);
+          liquidationAmount = liquidationValueEth.div(underlyingDebtPrice);
+        }
 
         // Add info to predictions array
         borrower.predictions = [];
-        borrower.predictions.push("Liquidate " + liquidationAmount.toFormat(8) + " " + borrower.debt[0].underlyingSymbol + " (" + borrower.maxLiquidationValue.toFormat(8) + " ETH) debt");
+        borrower.predictions.push("Liquidate " + liquidationAmount.toFormat(8) + " " + borrower.debt[0].underlyingSymbol + " (" + liquidationValueEth.toFormat(8) + " ETH) debt");
         borrower.predictions.push("Collect " + seizeAmount.toFormat(8) + borrower.collateral[0].underlyingSymbol + " (" + seizeAmountEth.toFormat(8) + " ETH) collateral");
 
-        // Check if actual collateral is too low
-        const expectedCollateral = seizeAmountEth;
-        const actualCollateral = (new Big(borrower.collateral[0].supplyBalance)).mul(borrower.collateral[0].underlyingPrice).div(1e36);
-        var minSeizeAmount = new Big(0);
-        
-        if (expectedCollateral.gt(actualCollateral)) {
-          borrower.predictions.push('Insufficient collateral.');
-        } else {
-          // Calculate expected gas fee
-          let expectedGasAmount = 0;
+        // Calculate expected gas fee
+        let expectedGasAmount = 0;
 
-          try {
-            if (borrower.debt[0].underlyingSymbol === 'ETH') {
-              expectedGasAmount = await App.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({ gas: 1e9, value: liquidationAmount.mul((new Big(10)).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0), from: App.selectedAccount });
-            } else {
-              expectedGasAmount = await App.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, liquidationAmount.mul((new Big(10)).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0), borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({ gas: 1e9, from: App.selectedAccount });
-            }
-          } catch {
-            expectedGasAmount = 600000;
+        try {
+          if (borrower.debt[0].underlyingSymbol === 'ETH') {
+            expectedGasAmount = await App.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({ gas: 1e9, value: liquidationAmount.mul((new Big(10)).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0), from: App.selectedAccount });
+          } else {
+            expectedGasAmount = await App.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, liquidationAmount.mul((new Big(10)).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0), borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({ gas: 1e9, from: App.selectedAccount });
           }
-
-          const gasPrice = new Big(await App.web3.eth.getGasPrice()).div(1e18);
-          const expectedGasFee = gasPrice.mul(expectedGasAmount);
-          borrower.predictions.push("Gas Amount = " + expectedGasAmount + ", Gas Fee = " + expectedGasFee.toFormat(8) + " ETH");
-
-          // Calculate expected profit after gas fees
-          const expectedRevenue = seizeAmount.mul(underlyingCollateralPrice).sub(liquidationAmount.mul(underlyingDebtPrice));
-          borrower.predictions.push("Expected Revenue = " + expectedRevenue.toFormat(8) + "ETH");
-          const expectedProfit = expectedRevenue.sub(expectedGasFee);
-          borrower.predictions.push("Expected Profit = " + expectedProfit.toFormat(8) + "ETH");
-
-          // Calculate minSeizeAmount: we want expectedProfit = 0, so expectedRevenue = expectedGasFee
-          minSeizeAmount = expectedGasFee.add(liquidationAmount.mul(underlyingDebtPrice)).div(underlyingCollateralPrice);
+        } catch {
+          expectedGasAmount = 600000;
         }
+
+        const gasPrice = new Big(await App.web3.eth.getGasPrice()).div(1e18);
+        const expectedGasFee = gasPrice.mul(expectedGasAmount);
+        borrower.predictions.push("Gas Amount = " + expectedGasAmount + ", Gas Fee = " + expectedGasFee.toFormat(8) + " ETH");
+
+        // Calculate expected profit after gas fees
+        const expectedRevenue = seizeAmount.mul(underlyingCollateralPrice).sub(liquidationAmount.mul(underlyingDebtPrice));
+        borrower.predictions.push("Expected Revenue = " + expectedRevenue.toFormat(8) + "ETH");
+        const expectedProfit = expectedRevenue.sub(expectedGasFee);
+        borrower.predictions.push("Expected Profit = " + expectedProfit.toFormat(8) + "ETH");
+
+        // Calculate minSeizeAmount: we want expectedProfit = 0, so expectedRevenue = expectedGasFee
+        var minSeizeAmount = expectedGasFee.add(liquidationAmount.mul(underlyingDebtPrice)).div(underlyingCollateralPrice);
         
         // Add row to table
         html += `<tr data-borrower="` + borrower.account + `" data-debt-ctoken="` + borrower.debt[0].cToken + `" data-debt-underlying="` + borrower.debt[0].underlyingToken + `" data-debt-symbol="` + borrower.debt[0].underlyingSymbol + `" data-debt-decimals="` + borrower.debt[0].underlyingDecimals + `" data-liquidation-amount="` + liquidationAmount.toFixed(parseInt(borrower.debt[0].underlyingDecimals)) + `" data-collateral-ctoken="` + borrower.collateral[0].cToken + `" data-collateral-underlying="` + borrower.collateral[0].underlyingToken + `"data-collateral-symbol="` + borrower.collateral[0].underlyingSymbol + `" data-collateral-decimals="` + borrower.collateral[0].underlyingDecimals + `" data-min-seize="` + minSeizeAmount.toFixed(parseInt(borrower.collateral[0].underlyingDecimals)) + `">

@@ -802,7 +802,7 @@ App = {
   bindPoolTableEvents: function bindPoolTableEvents(selector) {
     // Pool click handlers
     $(selector + ' tbody tr').click( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee23() {
-      var comptroller, cTokens, html, i, underlyingDecimals, data, borrowers, closeFactor, liquidationIncentive, _iterator, _step, borrower, _iterator2, _step2, asset, underlyingDebtPrice, underlyingCollateralPrice, liquidationAmount, seizeAmountEth, seizeAmount, expectedCollateral, actualCollateral, minSeizeAmount, expectedGasAmount, gasPrice, expectedGasFee, expectedRevenue, expectedProfit;
+      var comptroller, cTokens, html, i, underlyingDecimals, data, borrowers, closeFactor, liquidationIncentive, _iterator, _step, borrower, _iterator2, _step2, asset, debtAmount, liquidationAmount, underlyingDebtPrice, underlyingCollateralPrice, liquidationValueEth, seizeAmountEth, seizeAmount, actualCollateral, expectedGasAmount, gasPrice, expectedGasFee, expectedRevenue, expectedProfit, minSeizeAmount;
 
       return regeneratorRuntime.wrap(function _callee23$(_context23) {
         while (1) {
@@ -855,11 +855,12 @@ App = {
 
             case 22:
               if ((_step = _iterator.n()).done) {
-                _context23.next = 78;
+                _context23.next = 75;
                 break;
               }
 
               borrower = _step.value;
+              // Get debt and collateral
               borrower = _objectSpread({}, borrower);
               borrower.debt = [];
               borrower.collateral = [];
@@ -873,7 +874,8 @@ App = {
                   asset.supplyBalanceEth = new Big(asset.supplyBalance).mul(asset.underlyingPrice).div(1e36);
                   if (parseInt(asset.borrowBalance) > 0) borrower.debt.push(asset);
                   if (asset.membership && parseInt(asset.supplyBalance) > 0) borrower.collateral.push(asset);
-                }
+                } // Sort debt and collateral from highest to lowest ETH value
+
               } catch (err) {
                 _iterator2.e(err);
               } finally {
@@ -885,87 +887,90 @@ App = {
               });
               borrower.collateral.sort(function (a, b) {
                 return b.supplyBalanceEth.gt(a.supplyBalanceEth);
-              });
-              borrower.predictions = [];
-              borrower.maxLiquidationValue = new Big(borrower.totalBorrow).mul(closeFactor).div(1e18);
+              }); // Get max liquidation value across all borrows
+
+              borrower.maxLiquidationValue = new Big(borrower.totalBorrow).mul(closeFactor).div(1e18); // Get liquidation amount
+
+              debtAmount = new Big(borrower.debt[0].borrowBalance).div(new Big(10).pow(parseInt(borrower.debt[0].underlyingDecimals)));
+              liquidationAmount = debtAmount.mul(closeFactor);
               underlyingDebtPrice = new Big(borrower.debt[0].underlyingPrice).div(new Big(10).pow(36 - borrower.debt[0].underlyingDecimals));
               underlyingCollateralPrice = new Big(borrower.collateral[0].underlyingPrice).div(new Big(10).pow(36 - borrower.collateral[0].underlyingDecimals));
-              liquidationAmount = borrower.maxLiquidationValue.div(underlyingDebtPrice);
-              seizeAmountEth = borrower.maxLiquidationValue.mul(liquidationIncentive);
-              seizeAmount = seizeAmountEth.div(underlyingCollateralPrice);
-              borrower.predictions.push("Liquidate " + liquidationAmount.toFormat(8) + " " + borrower.debt[0].underlyingSymbol + " (" + borrower.maxLiquidationValue.toFormat(8) + " ETH) debt");
-              borrower.predictions.push("Collect " + seizeAmount.toFormat(8) + borrower.collateral[0].underlyingSymbol + " (" + seizeAmountEth.toFormat(8) + " ETH) collateral");
-              expectedCollateral = seizeAmountEth;
-              actualCollateral = new Big(borrower.collateral[0].supplyBalance).mul(borrower.collateral[0].underlyingPrice).div(1e36);
-              minSeizeAmount = new Big(0);
+              liquidationValueEth = liquidationAmount.mul(underlyingDebtPrice); // Get seize amount
 
-              if (!expectedCollateral.gt(actualCollateral)) {
-                _context23.next = 47;
-                break;
-              }
+              seizeAmountEth = liquidationValueEth.mul(liquidationIncentive);
+              seizeAmount = seizeAmountEth.div(underlyingCollateralPrice); // Check if actual collateral is too low to seize seizeAmount; if so, recalculate liquidation amount
 
-              borrower.predictions.push('Insufficient collateral.');
-              _context23.next = 75;
-              break;
+              actualCollateral = new Big(borrower.collateral[0].supplyBalance).div(new Big(10).pow(parseInt(borrower.collateral[0].underlyingDecimals)));
 
-            case 47:
+              if (seizeAmount.gt(actualCollateral)) {
+                seizeAmount = actualCollateral;
+                seizeAmountEth = seizeAmount.mul(underlyingCollateralPrice);
+                liquidationValueEth = seizeAmountEth.div(liquidationIncentive);
+                liquidationAmount = liquidationValueEth.div(underlyingDebtPrice);
+              } // Add info to predictions array
+
+
+              borrower.predictions = [];
+              borrower.predictions.push("Liquidate " + liquidationAmount.toFormat(8) + " " + borrower.debt[0].underlyingSymbol + " (" + liquidationValueEth.toFormat(8) + " ETH) debt");
+              borrower.predictions.push("Collect " + seizeAmount.toFormat(8) + borrower.collateral[0].underlyingSymbol + " (" + seizeAmountEth.toFormat(8) + " ETH) collateral"); // Calculate expected gas fee
+
               expectedGasAmount = 0;
-              _context23.prev = 48;
+              _context23.prev = 45;
 
               if (!(borrower.debt[0].underlyingSymbol === 'ETH')) {
-                _context23.next = 55;
+                _context23.next = 52;
                 break;
               }
 
-              _context23.next = 52;
+              _context23.next = 49;
               return App.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({
                 gas: 1e9,
                 value: liquidationAmount.mul(new Big(10).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0),
                 from: App.selectedAccount
               });
 
-            case 52:
+            case 49:
               expectedGasAmount = _context23.sent;
-              _context23.next = 58;
+              _context23.next = 55;
               break;
 
-            case 55:
-              _context23.next = 57;
+            case 52:
+              _context23.next = 54;
               return App.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, liquidationAmount.mul(new Big(10).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0), borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({
                 gas: 1e9,
                 from: App.selectedAccount
               });
 
-            case 57:
+            case 54:
               expectedGasAmount = _context23.sent;
 
-            case 58:
-              _context23.next = 63;
+            case 55:
+              _context23.next = 60;
               break;
 
-            case 60:
-              _context23.prev = 60;
-              _context23.t0 = _context23["catch"](48);
+            case 57:
+              _context23.prev = 57;
+              _context23.t0 = _context23["catch"](45);
               expectedGasAmount = 600000;
 
-            case 63:
+            case 60:
               _context23.t1 = Big;
-              _context23.next = 66;
+              _context23.next = 63;
               return App.web3.eth.getGasPrice();
 
-            case 66:
+            case 63:
               _context23.t2 = _context23.sent;
               gasPrice = new _context23.t1(_context23.t2).div(1e18);
               expectedGasFee = gasPrice.mul(expectedGasAmount);
-              borrower.predictions.push("Gas Amount = " + expectedGasAmount + ", Gas Fee = " + expectedGasFee.toFormat(8) + " ETH");
+              borrower.predictions.push("Gas Amount = " + expectedGasAmount + ", Gas Fee = " + expectedGasFee.toFormat(8) + " ETH"); // Calculate expected profit after gas fees
+
               expectedRevenue = seizeAmount.mul(underlyingCollateralPrice).sub(liquidationAmount.mul(underlyingDebtPrice));
               borrower.predictions.push("Expected Revenue = " + expectedRevenue.toFormat(8) + "ETH");
               expectedProfit = expectedRevenue.sub(expectedGasFee);
-              borrower.predictions.push("Expected Profit = " + expectedProfit.toFormat(8) + "ETH"); // We want expectedProfit = 0, so expectedRevenue = expectedGasFee
+              borrower.predictions.push("Expected Profit = " + expectedProfit.toFormat(8) + "ETH"); // Calculate minSeizeAmount: we want expectedProfit = 0, so expectedRevenue = expectedGasFee
 
-              minSeizeAmount = expectedGasFee.add(liquidationAmount.mul(underlyingDebtPrice)).div(underlyingCollateralPrice);
+              minSeizeAmount = expectedGasFee.add(liquidationAmount.mul(underlyingDebtPrice)).div(underlyingCollateralPrice); // Add row to table
 
-            case 75:
               html += "<tr data-borrower=\"" + borrower.account + "\" data-debt-ctoken=\"" + borrower.debt[0].cToken + "\" data-debt-underlying=\"" + borrower.debt[0].underlyingToken + "\" data-debt-symbol=\"" + borrower.debt[0].underlyingSymbol + "\" data-debt-decimals=\"" + borrower.debt[0].underlyingDecimals + "\" data-liquidation-amount=\"" + liquidationAmount.toFixed(parseInt(borrower.debt[0].underlyingDecimals)) + "\" data-collateral-ctoken=\"" + borrower.collateral[0].cToken + "\" data-collateral-underlying=\"" + borrower.collateral[0].underlyingToken + "\"data-collateral-symbol=\"" + borrower.collateral[0].underlyingSymbol + "\" data-collateral-decimals=\"" + borrower.collateral[0].underlyingDecimals + "\" data-min-seize=\"" + minSeizeAmount.toFixed(parseInt(borrower.collateral[0].underlyingDecimals)) + "\">\n          <td scope=\"row\">" + borrower.account + "</td>\n          <td>" + new Big(borrower.health).div(1e18).toFormat(8) + "</td>\n          <td>" + new Big(borrower.totalBorrow).div(1e18).toFormat(8) + " ETH</td>\n          <td>" + borrower.maxLiquidationValue.toFormat(8) + " ETH</td>\n          <td>\n            <ul class=\"m-0 p-0\" style=\"list-style-type: none;\">" + borrower.debt.map(function (asset) {
                 return '<li key="' + asset.underlyingToken + '">' + asset.underlyingSymbol + ': ' + new Big(asset.borrowBalance).div(new Big(10).pow(parseInt(asset.underlyingDecimals))).toFormat(8) + '</li>';
               }) + "</ul>\n          </td>\n          <td>\n            <ul class=\"m-0 p-0\" style=\"list-style-type: none;\">" + borrower.debt.map(function (asset) {
@@ -978,28 +983,28 @@ App = {
                 return '<li key="' + i + '">' + tx + '</li>';
               }) + "</ul>\n          </td>\n          <td><button type=\"button\" class=\"btn btn-info btn-sm button-liquidate\">Liquidate</button></td>\n        </tr>";
 
-            case 76:
+            case 73:
               _context23.next = 22;
               break;
 
-            case 78:
-              _context23.next = 83;
+            case 75:
+              _context23.next = 80;
               break;
 
-            case 80:
-              _context23.prev = 80;
+            case 77:
+              _context23.prev = 77;
               _context23.t3 = _context23["catch"](20);
 
               _iterator.e(_context23.t3);
 
-            case 83:
-              _context23.prev = 83;
+            case 80:
+              _context23.prev = 80;
 
               _iterator.f();
 
-              return _context23.finish(83);
+              return _context23.finish(80);
 
-            case 86:
+            case 83:
               $('.pool-detailed-table-liquidations tbody').html(html); // Switch pages
 
               $('#page-pools').hide();
@@ -1578,12 +1583,12 @@ App = {
                 }, _callee22, this);
               })));
 
-            case 95:
+            case 92:
             case "end":
               return _context23.stop();
           }
         }
-      }, _callee23, this, [[20, 80, 83, 86], [48, 60]]);
+      }, _callee23, this, [[20, 77, 80, 83], [45, 57]]);
     })));
   }
 };
