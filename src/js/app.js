@@ -18,7 +18,6 @@ App = {
   accounts: [],
   selectedAccount: null,
   fuse: null,
-  contracts: {},
   comptrollerAbi: null,
   cEtherAbi: null,
   cErc20Abi: null,
@@ -144,15 +143,10 @@ App = {
       });
     }
 
-    // Refresh contracts to use new Web3
-    for (const symbol of Object.keys(App.contracts)) App.contracts[symbol] = new App.web3.eth.Contract(App.contracts[symbol].options.jsonInterface, App.contracts[symbol].options.address);
-
     // Get user's account balance in the stablecoin fund, RFT balance, and account balance limit
     // TODO: Below
-    if (App.contracts.FusePoolDirectory) {
-      App.getMyFusePools();
-      if (!App.intervalGetMyFusePools) App.intervalGetMyFusePools = setInterval(App.getMyFusePools, 5 * 60 * 1000);
-    }
+    App.getMyFusePools();
+    if (!App.intervalGetMyFusePools) App.intervalGetMyFusePools = setInterval(App.getMyFusePools, 5 * 60 * 1000);
 
     // Load acounts dropdown
     $('#selected-account').empty();
@@ -267,6 +261,7 @@ App = {
         App.web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/c52a3970da0a47978bee0fe7988b67b6"));
       }
   
+      App.fuse = new Fuse(App.web3.currentProvider);
       App.initContracts();
       App.initWeb3Modal();
     });
@@ -276,35 +271,13 @@ App = {
    * Initialize FundManager and FundToken contracts.
    */
   initContracts: function() {
-    $.getJSON('abi/FusePoolDirectory.json?v=1611171333', function(data) {
-      App.contracts.FusePoolDirectory = new App.web3.eth.Contract(data, "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9");
-      App.getFusePools();
-      setInterval(App.getFusePools, 5 * 60 * 1000);
-      if (App.selectedAccount) {
-        App.getMyFusePools();
-        if (!App.intervalGetMyFusePools) App.intervalGetMyFusePools = setInterval(App.getMyFusePools, 5 * 60 * 1000);
-      }
-    });
+    App.getFusePools();
+    setInterval(App.getFusePools, 5 * 60 * 1000);
 
-    $.getJSON('abi/FuseSafeLiquidator.json?v=1611171333', function(data) {
-      App.contracts.FuseSafeLiquidator = new App.web3.eth.Contract(data, "0x0165878A594ca255338adfa4d48449f69242Eb8F");
-    });
-
-    $.getJSON('abi/Comptroller.json?v=1600737538', function(data) {
-      App.comptrollerAbi = data;
-    });
-
-    $.getJSON('abi/CErc20.json?v=1611699241', function(data) {
-      App.cErc20Abi = data;
-    });
-
-    $.getJSON('abi/CEther.json?v=1611699241', function(data) {
-      App.cEtherAbi = data;
-    });
-
-    $.getJSON('abi/ERC20.json?v=1600737538', function(data) {
-      App.erc20Abi = data;
-    });
+    App.comptrollerAbi = JSON.parse(App.fuse.compoundContracts["contracts/Comptroller.sol:Comptroller"].abi);
+    App.cErc20Abi = JSON.parse(App.fuse.compoundContracts["contracts/CErc20Delegator.sol:CErc20Delegator"].abi);
+    App.cEtherAbi = JSON.parse(App.fuse.compoundContracts["contracts/CEtherDelegator.sol:CEtherDelegator"].abi);
+    App.erc20Abi = JSON.parse(App.fuse.compoundContracts["contracts/EIP20Interface.sol:EIP20Interface"].abi);
   },
   
   /**
@@ -328,10 +301,7 @@ App = {
       }
 
       // Get user's Fuse pools
-      if (App.contracts.FusePoolDirectory) {
-        App.getMyFusePools();
-        if (!App.intervalGetMyFusePools) App.intervalGetMyFusePools = setInterval(App.getMyFusePools, 5 * 60 * 1000);
-      }
+      App.getMyFusePools();
     });
 
     $(document).on('change', '#DeployAssetPool, #DeployAssetUnderlying', async function() {
@@ -458,7 +428,7 @@ App = {
 
     try {
       // Add pools to table
-      var data = await App.contracts.FusePoolDirectory.methods.getPublicPoolsWithData().call();
+      var data = await App.fuse.contracts.FusePoolDirectory.methods.getPublicPoolsWithData().call();
     } catch (err) {
       return console.error(err);
     }
@@ -483,7 +453,7 @@ App = {
 
     try {
       // Add pools to table
-      var data = await App.contracts.FusePoolDirectory.methods.getPoolsByAccountWithData(App.selectedAccount).call();
+      var data = await App.fuse.contracts.FusePoolDirectory.methods.getPoolsByAccountWithData(App.selectedAccount).call();
     } catch (err) {
       return console.error(err);
     }
@@ -514,7 +484,7 @@ App = {
 
       // Add assets to tables
       var comptroller = $(this).data("comptroller");
-      var cTokens = await App.contracts.FusePoolDirectory.methods.getPoolAssetsWithData(comptroller).call({ from: App.selectedAccount });
+      var cTokens = await App.fuse.contracts.FusePoolDirectory.methods.getPoolAssetsWithData(comptroller).call({ from: App.selectedAccount });
       var html = '';
       for (var i = 0; i < cTokens.length; i++) {
         var underlyingDecimals = parseInt(cTokens[i].underlyingDecimals);
@@ -529,7 +499,7 @@ App = {
       $('.pool-detailed-table-assets-borrow tbody').html(html);
 
       // Unhealthy accounts table
-      var data = await App.contracts.FusePoolDirectory.methods.getPoolUsersWithData(comptroller, Web3.utils.toBN(1e18)).call();
+      var data = await App.fuse.contracts.FusePoolDirectory.methods.getPoolUsersWithData(comptroller, Web3.utils.toBN(1e18)).call();
       var borrowers = data["0"];
       borrowers.sort((a, b) => parseInt(b.totalBorrow) - parseInt(a.totalBorrow));
       var closeFactor = (new Big(data["1"])).div(1e18);
@@ -588,9 +558,9 @@ App = {
 
         try {
           if (borrower.debt[0].underlyingSymbol === 'ETH') {
-            expectedGasAmount = await App.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({ gas: 1e9, value: liquidationAmount.mul((new Big(10)).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0), from: App.selectedAccount });
+            expectedGasAmount = await App.fuse.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({ gas: 1e9, value: liquidationAmount.mul((new Big(10)).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0), from: App.selectedAccount });
           } else {
-            expectedGasAmount = await App.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, liquidationAmount.mul((new Big(10)).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0), borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({ gas: 1e9, from: App.selectedAccount });
+            expectedGasAmount = await App.fuse.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, liquidationAmount.mul((new Big(10)).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0), borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({ gas: 1e9, from: App.selectedAccount });
           }
         } catch {
           expectedGasAmount = 600000;
@@ -866,7 +836,7 @@ App = {
             else minProfit = Web3.utils.toBN((new Big(minProfit)).mul((new Big(10)).pow(exchangeProfitToDecimals)).toFixed(0));
 
             try {
-              await (underlyingDebtSymbol === "ETH" ? App.contracts.FuseSafeLiquidator.methods.safeLiquidateToEthWithFlashLoan(borrower.account, amount, debtCToken, collateralCToken, minProfit, exchangeProfitTo).send({ from: App.selectedAccount }) : App.contracts.FuseSafeLiquidator.methods.safeLiquidateToTokensWithFlashLoan(borrower.account, amount, debtCToken, collateralCToken, minProfit, exchangeProfitTo).send({ from: App.selectedAccount }));
+              await (underlyingDebtSymbol === "ETH" ? App.fuse.contracts.FuseSafeLiquidator.methods.safeLiquidateToEthWithFlashLoan(borrower.account, amount, debtCToken, collateralCToken, minProfit, exchangeProfitTo).send({ from: App.selectedAccount }) : App.fuse.contracts.FuseSafeLiquidator.methods.safeLiquidateToTokensWithFlashLoan(borrower.account, amount, debtCToken, collateralCToken, minProfit, exchangeProfitTo).send({ from: App.selectedAccount }));
             } catch (error) {
               return toastr["error"]("Liquidation failed: " + (error.message ? error.message : error), "Liquidation failed");
             }
@@ -878,14 +848,14 @@ App = {
 
             if (underlyingDebtSymbol !== "ETH") {
               try {
-                await debtToken.methods.approve(App.contracts.FuseSafeLiquidator.options.address, amount).send({ from: App.selectedAccount });
+                await debtToken.methods.approve(App.fuse.contracts.FuseSafeLiquidator.options.address, amount).send({ from: App.selectedAccount });
               } catch (error) {
                 return toastr["error"]("Approval failed: " + (error.message ? error.message : error), "Liquidation failed");
               }
             }
 
             try {
-              await (underlyingDebtSymbol === "ETH" ? App.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, debtCToken, collateralCToken, minSeize, exchangeProfitTo).send({ from: App.selectedAccount, value: amount }) : App.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, amount, debtCToken, collateralCToken, minSeize, exchangeProfitTo).send({ from: App.selectedAccount }));
+              await (underlyingDebtSymbol === "ETH" ? App.fuse.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, debtCToken, collateralCToken, minSeize, exchangeProfitTo).send({ from: App.selectedAccount, value: amount }) : App.fuse.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, amount, debtCToken, collateralCToken, minSeize, exchangeProfitTo).send({ from: App.selectedAccount }));
             } catch (error) {
               return toastr["error"]("Liquidation failed: " + (error.message ? error.message : error), "Liquidation failed");
             }
