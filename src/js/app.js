@@ -166,8 +166,8 @@ App = {
     // If any current data is displayed when
     // the user is switching acounts in the wallet
     // immediate hide this data
-    $(".pools-table-private tbody").html('');
-    $("#DeployAssetPool option:not(:disabled)").remove('');
+    $('.pools-table-private tbody').html('<tr colspan="7">Loading my Fuse pools...</td>');
+    $('#DeployAssetPool').html('<option selected disabled>Loading pools...</option>');
   
     // Disable button while UI is loading.
     // fetchAccountData() will take a while as it communicates
@@ -181,10 +181,6 @@ App = {
     $(".btn-connect").prop("disabled", false);
     $("#btn-disconnect").show();
     $('.show-account').show();
-    $('#page-pools').hide();
-    $('#page-deploy').show();
-    $('#tab-pools').css('text-decoration', '');
-    $('#tab-deploy').css('text-decoration', 'underline');
   },
   
   /**
@@ -245,9 +241,7 @@ App = {
     $('.show-account').hide();
     $("#btn-disconnect").hide();
     $(".btn-connect").show();
-    // TODO: Below
-    /* $('#FusePools').text("Loading...");
-    $('#MyFusePools').text("Loading..."); */
+    $('.pools-table-private tbody').html('<tr colspan="7">Wallet not connected.</td>');
   },
   
   /**
