@@ -815,17 +815,19 @@ App = {
         });
 
         $('#modal-liquidate #LiquidateSeizeCurrencySymbol, #modal-liquidate #LiquidateProfitCurrencySymbol').off('change').change(function() {
-          $(this).val() === "other" ? $('#LiquidateExchangeProfitTo').show() : $('#LiquidateExchangeProfitTo').hide();
+          $('#modal-liquidate #LiquidateSeizeCurrencySymbol, #modal-liquidate #LiquidateProfitCurrencySymbol').val($(this).val());
+          $(this).val() === "other" ? $('#LiquidateExchangeProfitToWrapper').show() : $('#LiquidateExchangeProfitToWrapper').hide();
         });
 
         $('#modal-liquidate #liquidateButton').off('click').click(async function() {
-          // Validate amount
+          // Validate amount and get liquidation method
           var amount = $('#LiquidateAmount').val();
           if (!amount) return toastr["error"]("Invalid liquidation amount.", "Liquidation failed");
           amount = Web3.utils.toBN((new Big(amount)).mul((new Big(10)).pow(underlyingDebtDecimals)).toFixed(0));
+          var liquidateMethod = $('#LiquidateMethod').val();
 
           // Validate exchangeProfitTo
-          var exchangeProfitTo = $('#modal-liquidate #LiquidateProfitCurrencySymbol').val();
+          var exchangeProfitTo = liquidateMethod === "uniswap" ? $('#modal-liquidate #LiquidateProfitCurrencySymbol').val() : $('#modal-liquidate #LiquidateSeizeCurrencySymbol').val();
           if (exchangeProfitTo == "collateral") exchangeProfitTo = underlyingCollateralToken;
           else if (exchangeProfitTo == "debt") exchangeProfitTo = underlyingDebtToken;
           else if (exchangeProfitTo == "eth") exchangeProfitTo = "0x0000000000000000000000000000000000000000";
@@ -842,8 +844,6 @@ App = {
           }
 
           // Validate method (flashloan or no flashloan)
-          var liquidateMethod = $('#modal-liquidate #LiquidateMethod').val();
-
           if (liquidateMethod === "uniswap") {
             // Liquidate via flashloan
             var minProfit = $('#LiquidateMinProfit').val();

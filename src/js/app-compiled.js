@@ -1426,15 +1426,16 @@ App = {
                           }
                         });
                         $('#modal-liquidate #LiquidateSeizeCurrencySymbol, #modal-liquidate #LiquidateProfitCurrencySymbol').off('change').change(function () {
-                          $(this).val() === "other" ? $('#LiquidateExchangeProfitTo').show() : $('#LiquidateExchangeProfitTo').hide();
+                          $('#modal-liquidate #LiquidateSeizeCurrencySymbol, #modal-liquidate #LiquidateProfitCurrencySymbol').val($(this).val());
+                          $(this).val() === "other" ? $('#LiquidateExchangeProfitToWrapper').show() : $('#LiquidateExchangeProfitToWrapper').hide();
                         });
                         $('#modal-liquidate #liquidateButton').off('click').click( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee21() {
-                          var amount, exchangeProfitTo, exchangeProfitToDecimals, liquidateMethod, minProfit, minSeize;
+                          var amount, liquidateMethod, exchangeProfitTo, exchangeProfitToDecimals, minProfit, minSeize;
                           return regeneratorRuntime.wrap(function _callee21$(_context21) {
                             while (1) {
                               switch (_context21.prev = _context21.next) {
                                 case 0:
-                                  // Validate amount
+                                  // Validate amount and get liquidation method
                                   amount = $('#LiquidateAmount').val();
 
                                   if (amount) {
@@ -1445,47 +1446,45 @@ App = {
                                   return _context21.abrupt("return", toastr["error"]("Invalid liquidation amount.", "Liquidation failed"));
 
                                 case 3:
-                                  amount = Web3.utils.toBN(new Big(amount).mul(new Big(10).pow(underlyingDebtDecimals)).toFixed(0)); // Validate exchangeProfitTo
+                                  amount = Web3.utils.toBN(new Big(amount).mul(new Big(10).pow(underlyingDebtDecimals)).toFixed(0));
+                                  liquidateMethod = $('#LiquidateMethod').val(); // Validate exchangeProfitTo
 
-                                  exchangeProfitTo = $('#modal-liquidate #LiquidateProfitCurrencySymbol').val();
+                                  exchangeProfitTo = liquidateMethod === "uniswap" ? $('#modal-liquidate #LiquidateProfitCurrencySymbol').val() : $('#modal-liquidate #LiquidateSeizeCurrencySymbol').val();
                                   if (exchangeProfitTo == "collateral") exchangeProfitTo = underlyingCollateralToken;else if (exchangeProfitTo == "debt") exchangeProfitTo = underlyingDebtToken;else if (exchangeProfitTo == "eth") exchangeProfitTo = "0x0000000000000000000000000000000000000000";else exchangeProfitTo = $('#LiquidateExchangeProfitTo').val();
 
                                   if (exchangeProfitTo) {
-                                    _context21.next = 8;
+                                    _context21.next = 9;
                                     break;
                                   }
 
                                   return _context21.abrupt("return", toastr["error"]("No destination currency specified for seized collateral.", "Liquidation failed"));
 
-                                case 8:
+                                case 9:
                                   // Get exchangeProfitTo decimal precision
                                   exchangeProfitToDecimals = 18;
 
                                   if (!(exchangeProfitTo !== "0x0000000000000000000000000000000000000000")) {
-                                    _context21.next = 21;
+                                    _context21.next = 22;
                                     break;
                                   }
 
-                                  _context21.prev = 10;
+                                  _context21.prev = 11;
                                   _context21.t0 = parseInt;
-                                  _context21.next = 14;
+                                  _context21.next = 15;
                                   return new App.web3.eth.Contract(App.erc20Abi, exchangeProfitTo).methods.decimals().call();
 
-                                case 14:
+                                case 15:
                                   _context21.t1 = _context21.sent;
                                   exchangeProfitToDecimals = (0, _context21.t0)(_context21.t1);
-                                  _context21.next = 21;
+                                  _context21.next = 22;
                                   break;
 
-                                case 18:
-                                  _context21.prev = 18;
-                                  _context21.t2 = _context21["catch"](10);
+                                case 19:
+                                  _context21.prev = 19;
+                                  _context21.t2 = _context21["catch"](11);
                                   return _context21.abrupt("return", toastr["error"]("Failed to retrieve decimal precision of exchange output token.", "Liquidation failed"));
 
-                                case 21:
-                                  // Validate method (flashloan or no flashloan)
-                                  liquidateMethod = $('#modal-liquidate #LiquidateMethod').val();
-
+                                case 22:
                                   if (!(liquidateMethod === "uniswap")) {
                                     _context21.next = 35;
                                     break;
@@ -1568,7 +1567,7 @@ App = {
                                   return _context21.stop();
                               }
                             }
-                          }, _callee21, null, [[10, 18], [25, 30], [38, 43], [46, 51]]);
+                          }, _callee21, null, [[11, 19], [25, 30], [38, 43], [46, 51]]);
                         })));
 
                       case 28:
