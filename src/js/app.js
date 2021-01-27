@@ -538,6 +538,7 @@ App = {
       var html = '';
 
       for (var borrower of borrowers) {
+        // Get debt and collateral
         borrower = { ...borrower };
         borrower.debt = [];
         borrower.collateral = [];
@@ -550,20 +551,26 @@ App = {
           if (asset.membership && parseInt(asset.supplyBalance) > 0) borrower.collateral.push(asset);
         }
 
+        // Sort debt and collateral from highest to lowest ETH value
         borrower.debt.sort((a, b) => b.borrowBalanceEth.gt(a.borrowBalanceEth));
         borrower.collateral.sort((a, b) => b.supplyBalanceEth.gt(a.supplyBalanceEth));
 
-        borrower.predictions = [];
-
+        // Get liquidation amount
         borrower.maxLiquidationValue = new Big(borrower.totalBorrow).mul(closeFactor).div(1e18);
         const underlyingDebtPrice = (new Big(borrower.debt[0].underlyingPrice)).div((new Big(10)).pow(36 - borrower.debt[0].underlyingDecimals));
         const underlyingCollateralPrice = (new Big(borrower.collateral[0].underlyingPrice)).div((new Big(10)).pow(36 - borrower.collateral[0].underlyingDecimals));
         const liquidationAmount = borrower.maxLiquidationValue.div(underlyingDebtPrice);
+
+        // Get seize amount
         const seizeAmountEth = borrower.maxLiquidationValue.mul(liquidationIncentive);
         const seizeAmount = seizeAmountEth.div(underlyingCollateralPrice);
+
+        // Add info to predictions array
+        borrower.predictions = [];
         borrower.predictions.push("Liquidate " + liquidationAmount.toFormat(8) + " " + borrower.debt[0].underlyingSymbol + " (" + borrower.maxLiquidationValue.toFormat(8) + " ETH) debt");
         borrower.predictions.push("Collect " + seizeAmount.toFormat(8) + borrower.collateral[0].underlyingSymbol + " (" + seizeAmountEth.toFormat(8) + " ETH) collateral");
 
+        // Check if actual collateral is too low
         const expectedCollateral = seizeAmountEth;
         const actualCollateral = (new Big(borrower.collateral[0].supplyBalance)).mul(borrower.collateral[0].underlyingPrice).div(1e36);
         var minSeizeAmount = new Big(0);
@@ -571,6 +578,7 @@ App = {
         if (expectedCollateral.gt(actualCollateral)) {
           borrower.predictions.push('Insufficient collateral.');
         } else {
+          // Calculate expected gas fee
           let expectedGasAmount = 0;
 
           try {
@@ -586,15 +594,18 @@ App = {
           const gasPrice = new Big(await App.web3.eth.getGasPrice()).div(1e18);
           const expectedGasFee = gasPrice.mul(expectedGasAmount);
           borrower.predictions.push("Gas Amount = " + expectedGasAmount + ", Gas Fee = " + expectedGasFee.toFormat(8) + " ETH");
+
+          // Calculate expected profit after gas fees
           const expectedRevenue = seizeAmount.mul(underlyingCollateralPrice).sub(liquidationAmount.mul(underlyingDebtPrice));
           borrower.predictions.push("Expected Revenue = " + expectedRevenue.toFormat(8) + "ETH");
           const expectedProfit = expectedRevenue.sub(expectedGasFee);
           borrower.predictions.push("Expected Profit = " + expectedProfit.toFormat(8) + "ETH");
 
-          // We want expectedProfit = 0, so expectedRevenue = expectedGasFee
+          // Calculate minSeizeAmount: we want expectedProfit = 0, so expectedRevenue = expectedGasFee
           minSeizeAmount = expectedGasFee.add(liquidationAmount.mul(underlyingDebtPrice)).div(underlyingCollateralPrice);
         }
         
+        // Add row to table
         html += `<tr data-borrower="` + borrower.account + `" data-debt-ctoken="` + borrower.debt[0].cToken + `" data-debt-underlying="` + borrower.debt[0].underlyingToken + `" data-debt-symbol="` + borrower.debt[0].underlyingSymbol + `" data-debt-decimals="` + borrower.debt[0].underlyingDecimals + `" data-liquidation-amount="` + liquidationAmount.toFixed(parseInt(borrower.debt[0].underlyingDecimals)) + `" data-collateral-ctoken="` + borrower.collateral[0].cToken + `" data-collateral-underlying="` + borrower.collateral[0].underlyingToken + `"data-collateral-symbol="` + borrower.collateral[0].underlyingSymbol + `" data-collateral-decimals="` + borrower.collateral[0].underlyingDecimals + `" data-min-seize="` + minSeizeAmount.toFixed(parseInt(borrower.collateral[0].underlyingDecimals)) + `">
           <td scope="row">` + borrower.account + `</td>
           <td>` + (new Big(borrower.health)).div(1e18).toFormat(8) + `</td>
