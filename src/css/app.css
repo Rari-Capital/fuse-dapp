@@ -18,13 +18,13 @@ body {
   font-family: Avenir-Book, sans-serif;
 }
 
-#page-pools, #page-pool, #page-deploy {
+#page-pools, #page-pool, #page-deploy, #page-liquidations {
   padding-top: 20px;
   padding-bottom: 5px;
 }
 
 @media (min-width: 576px) {
-  #page-pools, #page-pool, #page-deploy {
+  #page-pools, #page-pool, #page-deploy, #page-liquidations {
     padding-top: 35px;
     padding-bottom: 20px;
   }
