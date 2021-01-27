@@ -256,6 +256,8 @@
 
 /*!   export contracts/CTokenInterfaces.sol:CErc20Storage [provided] [no usage info] [missing usage info prevents renaming] */
 
+/*!   export contracts/CTokenInterfaces.sol:CEtherInterface [provided] [no usage info] [missing usage info prevents renaming] */
+
 /*!   export contracts/CTokenInterfaces.sol:CTokenInterface [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export contracts/CTokenInterfaces.sol:CTokenStorage [provided] [no usage info] [missing usage info prevents renaming] */
@@ -2022,6 +2024,8 @@
 
 /*! export deepCopy [provided] [no usage info] [missing usage info prevents renaming] */
 
+/*! export default [provided] [no usage info] [missing usage info prevents renaming] */
+
 /*! export default [provided] [used in main] [usage prevents renaming] */
 
 /*! export defaultAbiCoder [provided] [no usage info] [missing usage info prevents renaming] */
@@ -3416,6 +3420,10 @@
   !*** ./node_modules/url/util.js ***!
   \**********************************/
 
+/*!**********************************!*\
+  !*** ./src/irm/JumpRateModel.js ***!
+  \**********************************/
+
 /*!***********************************!*\
   !*** ./node_modules/keccak/js.js ***!
   \***********************************/
@@ -3694,6 +3702,10 @@
 
 /*!*******************************************!*\
   !*** ./node_modules/xhr-request/index.js ***!
+  \*******************************************/
+
+/*!*******************************************!*\
+  !*** ./src/irm/DAIInterestRateModelV2.js ***!
   \*******************************************/
 
 /*!********************************************!*\
@@ -4078,6 +4090,10 @@
 
 /*!************************************************!*\
   !*** ./node_modules/web3-eth-ens/lib/index.js ***!
+  \************************************************/
+
+/*!************************************************!*\
+  !*** ./src/irm/WhitePaperInterestRateModel.js ***!
   \************************************************/
 
 /*!*************************************************!*\
