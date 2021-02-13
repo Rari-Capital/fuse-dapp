@@ -254,11 +254,17 @@
               </div>
               <div class="input-group input-group-lg" style="border-bottom: 1px solid white;">
                 <select class="custom-select" id="DeployAssetInterestRateModel">
-                  <option value="0x521a06c080ff87cf8d3b47cfa46ca6ecb059e88d">WhitePaperInterestRateModel</option>
-                  <option value="0x6bc8fe27d0c7207733656595e73c0d5cf7afae36" selected>JumpRateModel</option>
-                  <option value="0xfb564da37b41b2f6b6edcc3e56fbf523bd9f2012" disabled>JumpRateModelV2</option><!-- Used by cDAI -->
-                  <option value="0x000000007675b5e1da008f037a0800b309e0c493">DAIInterestRateModelV2</option>
-                  <option value="0xfed941d39905b23d6faf02c8301d40bd4834e27f" disabled>DAIInterestRateModelV3</option>
+                  <option value="WhitePaperInterestRateModel(2e16,1e17)">WhitePaperInterestRateModel (0.02, 0.1)</option>
+                  <option value="WhitePaperInterestRateModel(2e16,2e17)">WhitePaperInterestRateModel (0.02, 0.2)</option>
+                  <option value="WhitePaperInterestRateModel">WhitePaperInterestRateModel (new)</option>
+                  <option value="JumpRateModel(2e16,1e17,1e18,9e17)">JumpRateModel (0.02, 0.1, 1, 0.9)</option>
+                  <option value="JumpRateModel(2e16,2e17,2e18,9e17)" selected>JumpRateModel (0.02, 0.2, 2, 0.9)</option>
+                  <option value="JumpRateModel">JumpRateModel (new)</option>
+                  <!--<option value="JumpRateModelV2" disabled>JumpRateModelV2</option>-->
+                  <!-- JumpRateModelV2 is currently used by cDAI (probably because DSR is 0 for now) -->
+                  <!--<option value="DAIInterestRateModelV2(2e18,9e17)">DAIInterestRateModelV2 (2e18, 9e17)</option>-->
+                  <!--<option value="DAIInterestRateModelV2">DAIInterestRateModelV2 (new)</option>-->
+                  <!--<option value="DAIInterestRateModelV3" disabled>DAIInterestRateModelV3</option>-->
                 </select>
               </div>
               <div class="input-group input-group-lg" style="border-bottom: 1px solid white;">

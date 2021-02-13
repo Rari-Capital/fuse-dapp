@@ -398,6 +398,63 @@ App = {
     $('#deployAssetButton').prop("disabled", true).html('<div class="loading-icon"><div></div><div></div><div></div></div>');
 
     await (async function() {
+      // Deploy interest rate model if necessary
+      for (const possibleModel of ["WhitePaperInterestRateModel", "JumpRateModel", "DAIInterestRateModelV2"]) if (conf.interestRateModel.indexOf(possibleModel) === 0) {
+        if (conf.interestRateModel[conf.interestRateModel.length - 1] === ")") {
+          // Get config from inside parentheses
+          var openParenIndex = conf.interestRateModel.indexOf("(");
+          var interestRateModelConfArray = conf.interestRateModel.substr(openParenIndex + 1, conf.interestRateModel.length - openParenIndex - 2).split(",");
+          conf.interestRateModel = conf.interestRateModel.substr(0, openParenIndex);
+          switch (conf.interestRateModel) {
+            case "WhitePaperInterestRateModel":
+              var interestRateModelConf = { baseRatePerYear: Math.trunc(Number(interestRateModelConfArray[0])).toString(), multiplierPerYear: Math.trunc(Number(interestRateModelConfArray[1])).toString() };
+              break;
+            case "JumpRateModel":
+              var interestRateModelConf = { baseRatePerYear: Math.trunc(Number(interestRateModelConfArray[0])).toString(), multiplierPerYear: Math.trunc(Number(interestRateModelConfArray[1])).toString(), jumpMultiplierPerYear: Math.trunc(Number(interestRateModelConfArray[2])).toString(), kink: Math.trunc(Number(interestRateModelConfArray[3])).toString() };
+              break;
+            case "DAIInterestRateModelV2":
+              var interestRateModelConf = { jumpMultiplierPerYear: Math.trunc(Number(interestRateModelConfArray[0])).toString(), kink: Math.trunc(Number(interestRateModelConfArray[1])).toString() };
+              break;
+          }
+        } else {
+          // Prompt user for config
+          // TODO: Add a modal for this
+          switch (conf.interestRateModel) {
+            case "WhitePaperInterestRateModel":
+              var interestRateModelConf = {
+                baseRatePerYear: Math.trunc(prompt("Please enter the base borrow rate per year for your new WhitePaperInterestRateModel:") * 1e18).toString(),
+                multiplierPerYear: Math.trunc(prompt("Please enter the slope of the borrow rate per year over utilization rate for your new WhitePaperInterestRateModel:") * 1e18).toString()
+              };
+              break;
+            case "JumpRateModel":
+              var interestRateModelConf = {
+                baseRatePerYear: Math.trunc(prompt("Please enter the base borrow rate per year for your new JumpRateModel:") * 1e18).toString(),
+                multiplierPerYear: Math.trunc(prompt("Please enter the slope of the borrow rate per year over utilization rate for your new JumpRateModel:") * 1e18).toString(),
+                jumpMultiplierPerYear: Math.trunc(prompt("Please enter the jump slope (kicks in after the kink) of the borrow rate per year over utilization rate for your new JumpRateModel:") * 1e18).toString(),
+                kink: Math.trunc(prompt("Please enter the kink point (utilization rate above which the jump slope kicks in) for your new JumpRateModel:") * 1e18).toString()
+              }
+              break;
+            case "DAIInterestRateModelV2":
+              var interestRateModelConf = {
+                jumpMultiplierPerYear: Math.trunc(prompt("Please enter the jump slope (kicks in after the kink) of the borrow rate per year over utilization rate for your new DAIInterestRateModelV2:") * 1e18).toString(),
+                kink: Math.trunc(prompt("Please enter the kink point (utilization rate above which the jump slope kicks in) for your new DAIInterestRateModelV2:") * 1e18).toString()
+              }
+              break;
+          }
+        }
+
+        // Deploy interest rate model
+        try {
+          conf.interestRateModel = await App.fuse.deployInterestRateModel(conf.interestRateModel, interestRateModelConf, { from: App.selectedAccount });
+        } catch (error) {
+          return toastr["error"]("Deployment of new interest rate model failed: " + (error.message ? error.message : error), "Deployment failed");
+        }
+
+        // TODO: Add interest rate model type, address, etc. to localStorage and retrieve when user connects wallet
+
+        break;
+      }
+
       // Deploy new asset to existing pool via SDK
       try {
         var [assetAddress, implementationAddress, interestRateModel] = await App.fuse.deployAsset(conf, collateralFactor, reserveFactor, adminFee, { from: App.selectedAccount });
@@ -406,7 +463,7 @@ App = {
       }
 
       // Mixpanel
-      if (typeof mixpanel !== 'undefined') mixpanel.track("Asset deployed to pool", { assetAddress, implementationAddress, interestRateModel, ...conf, collateralFactor, reserveFactor, adminFee });
+      if (typeof mixpanel !== 'undefined') mixpanel.track("Asset deployed to pool", { ...conf, assetAddress, implementationAddress, interestRateModel, collateralFactor, reserveFactor, adminFee });
 
       // Alert success and refresh balances
       toastr["success"]("Deployment of asset to Fuse pool confirmed! Contract address: " + assetAddress, "Deployment successful");

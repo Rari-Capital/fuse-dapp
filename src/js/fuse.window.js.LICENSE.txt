@@ -152,8 +152,6 @@
 
 /*!     export location [provided] [no usage info] [missing usage info prevents renaming] */
 
-/*!     export metadata [provided] [no usage info] [missing usage info prevents renaming] */
-
 /*!     export name [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!     export port [provided] [no usage info] [missing usage info prevents renaming] */
@@ -218,137 +216,33 @@
 
 /*!   export constant [provided] [no usage info] [missing usage info prevents renaming] */
 
-/*!   export contracts/CDaiDelegate.sol:CDaiDelegate [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CDaiDelegate.sol:DaiJoinLike [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CDaiDelegate.sol:GemLike [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CDaiDelegate.sol:PotLike [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CDaiDelegate.sol:VatLike [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CErc20.sol:CErc20 [provided] [no usage info] [missing usage info prevents renaming] */
-
 /*!   export contracts/CErc20Delegate.sol:CErc20Delegate [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export contracts/CErc20Delegator.sol:CErc20Delegator [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CErc20Immutable.sol:CErc20Immutable [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CEther.sol:CEther [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export contracts/CEtherDelegate.sol:CEtherDelegate [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export contracts/CEtherDelegator.sol:CEtherDelegator [provided] [no usage info] [missing usage info prevents renaming] */
 
-/*!   export contracts/CEtherImmutable.sol:CEtherImmutable [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CToken.sol:CToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CTokenInterfaces.sol:CDelegateInterface [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CTokenInterfaces.sol:CDelegationStorage [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CTokenInterfaces.sol:CDelegatorInterface [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CTokenInterfaces.sol:CErc20Interface [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CTokenInterfaces.sol:CErc20Storage [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CTokenInterfaces.sol:CEtherInterface [provided] [no usage info] [missing usage info prevents renaming] */
-
 /*!   export contracts/CTokenInterfaces.sol:CTokenInterface [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CTokenInterfaces.sol:CTokenStorage [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CTokenInterfaces.sol:IFuseFeeDistributor [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/CarefulMath.sol:CarefulMath [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/ChainlinkPriceOracle.sol:AggregatorV3Interface [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export contracts/ChainlinkPriceOracle.sol:ChainlinkPriceOracle [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export contracts/Comptroller.sol:Comptroller [provided] [no usage info] [missing usage info prevents renaming] */
 
-/*!   export contracts/ComptrollerG1.sol:ComptrollerG1 [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/ComptrollerInterface.sol:ComptrollerInterface [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/ComptrollerStorage.sol:ComptrollerV1Storage [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/ComptrollerStorage.sol:ComptrollerV2Storage [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/ComptrollerStorage.sol:UnitrollerAdminStorage [provided] [no usage info] [missing usage info prevents renaming] */
-
 /*!   export contracts/DAIInterestRateModelV2.sol:DAIInterestRateModelV2 [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/DAIInterestRateModelV2.sol:JugLike [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/DAIInterestRateModelV2.sol:PotLike [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export contracts/EIP20Interface.sol:EIP20Interface [provided] [no usage info] [missing usage info prevents renaming] */
 
-/*!   export contracts/EIP20NonStandardInterface.sol:EIP20NonStandardInterface [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/ErrorReporter.sol:ComptrollerErrorReporter [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/ErrorReporter.sol:TokenErrorReporter [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Exponential.sol:Exponential [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Governance/Comp.sol:Comp [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Governance/GovernorAlpha.sol:CompInterface [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Governance/GovernorAlpha.sol:GovernorAlpha [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Governance/GovernorAlpha.sol:TimelockInterface [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/InterestRateModel.sol:InterestRateModel [provided] [no usage info] [missing usage info prevents renaming] */
-
 /*!   export contracts/JumpRateModel.sol:JumpRateModel [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Lens/CompoundLens.sol:CompoundLens [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Maximillion.sol:Maximillion [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/OpenOracleData.sol:OpenOracleData [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export contracts/OpenOraclePriceData.sol:OpenOraclePriceData [provided] [no usage info] [missing usage info prevents renaming] */
 
-/*!   export contracts/OpenOracleView.sol:OpenOracleView [provided] [no usage info] [missing usage info prevents renaming] */
-
 /*!   export contracts/PreferredPriceOracle.sol:PreferredPriceOracle [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/PriceOracle.sol:PriceOracle [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/PriceOracleProxy.sol:PriceOracleProxy [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/PriceOracleProxy.sol:V1PriceOracleInterface [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/SafeMath.sol:SafeMath [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export contracts/SimplePriceOracle.sol:SimplePriceOracle [provided] [no usage info] [missing usage info prevents renaming] */
 
-/*!   export contracts/Timelock.sol:Timelock [provided] [no usage info] [missing usage info prevents renaming] */
-
 /*!   export contracts/Uniswap/UniswapAnchoredView.sol:UniswapAnchoredView [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Uniswap/UniswapConfig.sol:CErc20 [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Uniswap/UniswapConfig.sol:UniswapConfig [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Uniswap/UniswapLib.sol:FixedPoint [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Uniswap/UniswapLib.sol:IERC20 [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Uniswap/UniswapLib.sol:IUniswapV2Pair [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Uniswap/UniswapLib.sol:UniswapV2Library [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export contracts/Uniswap/UniswapLib.sol:UniswapV2OracleLibrary [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export contracts/Uniswap/UniswapView.sol:UniswapView [provided] [no usage info] [missing usage info prevents renaming] */
 
@@ -599,140 +493,6 @@
 /*!   export tape [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export test [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CErc20Harness.sol:CDaiDelegateHarness [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CErc20Harness.sol:CDaiDelegateMakerHarness [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CErc20Harness.sol:CDaiDelegateScenario [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CErc20Harness.sol:CErc20DelegateHarness [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CErc20Harness.sol:CErc20DelegateScenario [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CErc20Harness.sol:CErc20DelegateScenarioExtra [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CErc20Harness.sol:CErc20DelegatorScenario [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CErc20Harness.sol:CErc20Harness [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CErc20Harness.sol:CErc20Scenario [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CErc20Harness.sol:CEvil [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CEtherHarness.sol:CEtherHarness [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CEtherHarness.sol:CEtherScenario [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/CompHarness.sol:CompScenario [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ComptrollerHarness.sol:BoolComptroller [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ComptrollerHarness.sol:ComptrollerBorked [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ComptrollerHarness.sol:ComptrollerHarness [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ComptrollerHarness.sol:ComptrollerScenario [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ComptrollerHarness.sol:EchoTypesComptroller [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ComptrollerScenarioG1.sol:ComptrollerScenarioG1 [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/Const.sol:ConstBase [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/Const.sol:ConstSub [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/Counter.sol:Counter [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ERC20.sol:ERC20 [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ERC20.sol:ERC20Base [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ERC20.sol:ERC20Harness [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ERC20.sol:ERC20NS [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ERC20.sol:NonStandardToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/ERC20.sol:StandardToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/EvilToken.sol:EvilToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/FalseMarker.sol:FalseMarkerMethodComptroller [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/FalseMarker.sol:FalseMarkerMethodInterestRateModel [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/FaucetToken.sol:FaucetNonStandardToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/FaucetToken.sol:FaucetToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/FaucetToken.sol:FaucetTokenReEntrantHarness [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/FeeToken.sol:FeeToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/FixedPriceOracle.sol:FixedPriceOracle [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/GovernorAlphaHarness.sol:GovernorAlphaHarness [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/InterestRateModelHarness.sol:InterestRateModelHarness [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/MathHelpers.sol:MathHelpers [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/MockMCD.sol:MockJug [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/MockMCD.sol:MockPot [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/Structs.sol:Structs [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/TetherInterface.sol:TetherInterface [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/TimelockHarness.sol:TimelockHarness [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/TimelockHarness.sol:TimelockTest [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:BasicToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:BurnableToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:CanReclaimToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:Claimable [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:DetailedERC20 [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:ERC20 [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:ERC20Basic [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:MintableToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:Ownable [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:OwnableContract [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:Pausable [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:PausableToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:SafeERC20 [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:SafeMath [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:StandardToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/Contracts/WBTC.sol:WBTCToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/contracts/MockUniswapAnchoredView.sol:MockUniswapAnchoredView [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/contracts/MockUniswapTokenPair.sol:MockUniswapTokenPair [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/contracts/ProxyPriceOracle.sol:MockAnchorOracle [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/contracts/ProxyPriceOracle.sol:MockCToken [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/contracts/ProxyPriceOracle.sol:ProxyPriceOracle [provided] [no usage info] [missing usage info prevents renaming] */
-
-/*!   export tests/contracts/Test.sol:TestOverflow [provided] [no usage info] [missing usage info prevents renaming] */
 
 /*!   export tierStep [provided] [no usage info] [missing usage info prevents renaming] */
 
@@ -1000,8 +760,6 @@
 
 /*! CommonJS bailout: module.exports is used directly at 220:0-14 */
 
-/*! CommonJS bailout: module.exports is used directly at 225:0-14 */
-
 /*! CommonJS bailout: module.exports is used directly at 22:0-14 */
 
 /*! CommonJS bailout: module.exports is used directly at 234:0-14 */
@@ -1013,6 +771,8 @@
 /*! CommonJS bailout: module.exports is used directly at 240:0-14 */
 
 /*! CommonJS bailout: module.exports is used directly at 24:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 257:0-14 */
 
 /*! CommonJS bailout: module.exports is used directly at 25:0-14 */
 
@@ -1085,6 +845,8 @@
 /*! CommonJS bailout: module.exports is used directly at 440:0-14 */
 
 /*! CommonJS bailout: module.exports is used directly at 446:0-14 */
+
+/*! CommonJS bailout: module.exports is used directly at 44:17-31 */
 
 /*! CommonJS bailout: module.exports is used directly at 45:0-14 */
 
@@ -3568,12 +3330,12 @@
   !*** ./src/abi/FusePoolDirectory.json ***!
   \****************************************/
 
-/*!****************************************!*\
-  !*** ./src/contracts/open-oracle.json ***!
-  \****************************************/
-
 /*!*****************************************!*\
   !*** ./node_modules/base64-js/index.js ***!
+  \*****************************************/
+
+/*!*****************************************!*\
+  !*** ./node_modules/call-bind/index.js ***!
   \*****************************************/
 
 /*!*****************************************!*\
@@ -3606,6 +3368,10 @@
 
 /*!*****************************************!*\
   !*** ./node_modules/xtend/immutable.js ***!
+  \*****************************************/
+
+/*!*****************************************!*\
+  !*** ./src/abi/FuseFeeDistributor.json ***!
   \*****************************************/
 
 /*!*****************************************!*\
@@ -3812,6 +3578,10 @@
   !*** ./node_modules/web3-shh/lib/index.js ***!
   \********************************************/
 
+/*!********************************************!*\
+  !*** ./src/contracts/open-oracle.min.json ***!
+  \********************************************/
+
 /*!*********************************************!*\
   !*** ./node_modules/assert/build/assert.js ***!
   \*********************************************/
@@ -3838,6 +3608,10 @@
 
 /*!*********************************************!*\
   !*** ./node_modules/function-bind/index.js ***!
+  \*********************************************/
+
+/*!*********************************************!*\
+  !*** ./node_modules/get-intrinsic/index.js ***!
   \*********************************************/
 
 /*!*********************************************!*\
@@ -3970,10 +3744,6 @@
 
 /*!**********************************************!*\
   !*** ./node_modules/web3-utils/lib/utils.js ***!
-  \**********************************************/
-
-/*!**********************************************!*\
-  !*** ./src/contracts/compound-protocol.json ***!
   \**********************************************/
 
 /*!***********************************************!*\
@@ -4205,10 +3975,6 @@
   \**************************************************/
 
 /*!**************************************************!*\
-  !*** ./node_modules/es-abstract/GetIntrinsic.js ***!
-  \**************************************************/
-
-/*!**************************************************!*\
   !*** ./node_modules/ethereumjs-tx/dist/index.js ***!
   \**************************************************/
 
@@ -4250,6 +4016,10 @@
 
 /*!**************************************************!*\
   !*** ./node_modules/xhr2-cookies/dist/errors.js ***!
+  \**************************************************/
+
+/*!**************************************************!*\
+  !*** ./src/contracts/compound-protocol.min.json ***!
   \**************************************************/
 
 /*!***************************************************!*\
@@ -4438,10 +4208,6 @@
 
 /*!******************************************************!*\
   !*** ./node_modules/elliptic/lib/elliptic/ec/key.js ***!
-  \******************************************************/
-
-/*!******************************************************!*\
-  !*** ./node_modules/es-abstract/helpers/callBind.js ***!
   \******************************************************/
 
 /*!******************************************************!*\
