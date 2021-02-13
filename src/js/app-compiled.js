@@ -438,6 +438,12 @@ App = {
         }
       }, _callee5, null, [[2, 8]]);
     })));
+    $(document).on('change', '#DeployPoolPriceOracle', function () {
+      $('#DeployPoolPriceOracle').val() && $('#DeployPoolPriceOracle').val().length > 0 ? $('#DeployPoolPriceOracleOtherWrapper').hide() : $('#DeployPoolPriceOracleOtherWrapper').show();
+    });
+    $(document).on('change', '#DeployAssetInterestRateModel', function () {
+      $('#DeployAssetInterestRateModel').val() && $('#DeployAssetInterestRateModel').val().length > 0 ? $('#DeployAssetInterestRateModelOtherWrapper').hide() : $('#DeployAssetInterestRateModelOtherWrapper').show();
+    });
     $(document).on('click', '#deployPoolButton', App.handleDeployPool);
     $(document).on('click', '#deployAssetButton', App.handleDeployAsset);
   },
@@ -460,7 +466,7 @@ App = {
               if (maxAssets === "") maxAssets = 20;
               liquidationIncentive = $('#DeployPoolLiquidationIncentive').val();
               if (liquidationIncentive === "") liquidationIncentive = Web3.utils.toBN(1.08e18);else liquidationIncentive = Web3.utils.toBN(new Big(liquidationIncentive).mul(new Big(10).pow(18)).toFixed(0));
-              priceOracle = $('#DeployPoolPriceOracle').val(); // TODO: Correct public PreferredPriceOracle and public UniswapView addresses
+              priceOracle = $('#DeployPoolPriceOracle').val() && $('#DeployPoolPriceOracle').val().length > 0 ? $('#DeployPoolPriceOracle').val() : $('#DeployPoolPriceOracleOther').val(); // TODO: Correct public PreferredPriceOracle and public UniswapView addresses
 
               if (priceOracle === "PreferredPriceOracle" && Fuse.PUBLIC_PREFERRED_PRICE_ORACLE_CONTRACT_ADDRESS && confirm("Would you like to use the public PreferredPriceOracle? There is no reason to say no unless you need to use SushiSwap (or another Uniswap V2 fork) or you need to set fixed prices for tokens other than WETH.")) priceOracle = Fuse.PUBLIC_PREFERRED_PRICE_ORACLE_CONTRACT_ADDRESS;
               if (priceOracle === "UniswapView" && Fuse.PUBLIC_UNISWAP_VIEW_CONTRACT_ADDRESS && confirm("Would you like to use the public UniswapView? There is no reason to say no unless you need to use SushiSwap (or another Uniswap V2 fork) or you need to set fixed prices for tokens other than WETH.")) priceOracle = Fuse.PUBLIC_UNISWAP_VIEW_CONTRACT_ADDRESS;
@@ -558,7 +564,7 @@ App = {
               conf = {
                 underlying: $('#DeployAssetUnderlying').val(),
                 comptroller: $('#DeployAssetPool').val(),
-                interestRateModel: $('#DeployAssetInterestRateModel').val(),
+                interestRateModel: $('#DeployAssetInterestRateModel').val() && $('#DeployAssetInterestRateModel').val().length > 0 ? $('#DeployAssetInterestRateModel').val() : $('#DeployAssetInterestRateModelOther').val(),
                 initialExchangeRateMantissa: Web3.utils.toBN(1e18),
                 name: $('#DeployAssetName').val(),
                 symbol: $('#DeployAssetSymbol').val(),
@@ -575,39 +581,147 @@ App = {
               $('#deployAssetButton').prop("disabled", true).html('<div class="loading-icon"><div></div><div></div><div></div></div>');
               _context9.next = 11;
               return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8() {
-                var _yield$App$fuse$deplo3, _yield$App$fuse$deplo4, assetAddress, implementationAddress, interestRateModel;
+                var _i2, _arr2, possibleModel, openParenIndex, interestRateModelConfArray, interestRateModelConf, _yield$App$fuse$deplo3, _yield$App$fuse$deplo4, assetAddress, implementationAddress, interestRateModel;
 
                 return regeneratorRuntime.wrap(function _callee8$(_context8) {
                   while (1) {
                     switch (_context8.prev = _context8.next) {
                       case 0:
-                        _context8.prev = 0;
-                        _context8.next = 3;
+                        _i2 = 0, _arr2 = ["WhitePaperInterestRateModel", "JumpRateModel", "DAIInterestRateModelV2"];
+
+                      case 1:
+                        if (!(_i2 < _arr2.length)) {
+                          _context8.next = 41;
+                          break;
+                        }
+
+                        possibleModel = _arr2[_i2];
+
+                        if (!(conf.interestRateModel.indexOf(possibleModel) === 0)) {
+                          _context8.next = 38;
+                          break;
+                        }
+
+                        if (!(conf.interestRateModel[conf.interestRateModel.length - 1] === ")")) {
+                          _context8.next = 19;
+                          break;
+                        }
+
+                        // Get config from inside parentheses
+                        openParenIndex = conf.interestRateModel.indexOf("(");
+                        interestRateModelConfArray = conf.interestRateModel.substr(openParenIndex + 1, conf.interestRateModel.length - openParenIndex - 2).split(",");
+                        conf.interestRateModel = conf.interestRateModel.substr(0, openParenIndex);
+                        _context8.t0 = conf.interestRateModel;
+                        _context8.next = _context8.t0 === "WhitePaperInterestRateModel" ? 11 : _context8.t0 === "JumpRateModel" ? 13 : _context8.t0 === "DAIInterestRateModelV2" ? 15 : 17;
+                        break;
+
+                      case 11:
+                        interestRateModelConf = {
+                          baseRatePerYear: Math.trunc(Number(interestRateModelConfArray[0])).toString(),
+                          multiplierPerYear: Math.trunc(Number(interestRateModelConfArray[1])).toString()
+                        };
+                        return _context8.abrupt("break", 17);
+
+                      case 13:
+                        interestRateModelConf = {
+                          baseRatePerYear: Math.trunc(Number(interestRateModelConfArray[0])).toString(),
+                          multiplierPerYear: Math.trunc(Number(interestRateModelConfArray[1])).toString(),
+                          jumpMultiplierPerYear: Math.trunc(Number(interestRateModelConfArray[2])).toString(),
+                          kink: Math.trunc(Number(interestRateModelConfArray[3])).toString()
+                        };
+                        return _context8.abrupt("break", 17);
+
+                      case 15:
+                        interestRateModelConf = {
+                          jumpMultiplierPerYear: Math.trunc(Number(interestRateModelConfArray[0])).toString(),
+                          kink: Math.trunc(Number(interestRateModelConfArray[1])).toString()
+                        };
+                        return _context8.abrupt("break", 17);
+
+                      case 17:
+                        _context8.next = 28;
+                        break;
+
+                      case 19:
+                        _context8.t1 = conf.interestRateModel;
+                        _context8.next = _context8.t1 === "WhitePaperInterestRateModel" ? 22 : _context8.t1 === "JumpRateModel" ? 24 : _context8.t1 === "DAIInterestRateModelV2" ? 26 : 28;
+                        break;
+
+                      case 22:
+                        interestRateModelConf = {
+                          baseRatePerYear: Math.trunc(prompt("Please enter the base borrow rate per year for your new WhitePaperInterestRateModel:") * 1e18).toString(),
+                          multiplierPerYear: Math.trunc(prompt("Please enter the slope of the borrow rate per year over utilization rate for your new WhitePaperInterestRateModel:") * 1e18).toString()
+                        };
+                        return _context8.abrupt("break", 28);
+
+                      case 24:
+                        interestRateModelConf = {
+                          baseRatePerYear: Math.trunc(prompt("Please enter the base borrow rate per year for your new JumpRateModel:") * 1e18).toString(),
+                          multiplierPerYear: Math.trunc(prompt("Please enter the slope of the borrow rate per year over utilization rate for your new JumpRateModel:") * 1e18).toString(),
+                          jumpMultiplierPerYear: Math.trunc(prompt("Please enter the jump slope (kicks in after the kink) of the borrow rate per year over utilization rate for your new JumpRateModel:") * 1e18).toString(),
+                          kink: Math.trunc(prompt("Please enter the kink point (utilization rate above which the jump slope kicks in) for your new JumpRateModel:") * 1e18).toString()
+                        };
+                        return _context8.abrupt("break", 28);
+
+                      case 26:
+                        interestRateModelConf = {
+                          jumpMultiplierPerYear: Math.trunc(prompt("Please enter the jump slope (kicks in after the kink) of the borrow rate per year over utilization rate for your new DAIInterestRateModelV2:") * 1e18).toString(),
+                          kink: Math.trunc(prompt("Please enter the kink point (utilization rate above which the jump slope kicks in) for your new DAIInterestRateModelV2:") * 1e18).toString()
+                        };
+                        return _context8.abrupt("break", 28);
+
+                      case 28:
+                        _context8.prev = 28;
+                        _context8.next = 31;
+                        return App.fuse.deployInterestRateModel(conf.interestRateModel, interestRateModelConf, {
+                          from: App.selectedAccount
+                        });
+
+                      case 31:
+                        conf.interestRateModel = _context8.sent;
+                        _context8.next = 37;
+                        break;
+
+                      case 34:
+                        _context8.prev = 34;
+                        _context8.t2 = _context8["catch"](28);
+                        return _context8.abrupt("return", toastr["error"]("Deployment of new interest rate model failed: " + (_context8.t2.message ? _context8.t2.message : _context8.t2), "Deployment failed"));
+
+                      case 37:
+                        return _context8.abrupt("break", 41);
+
+                      case 38:
+                        _i2++;
+                        _context8.next = 1;
+                        break;
+
+                      case 41:
+                        _context8.prev = 41;
+                        _context8.next = 44;
                         return App.fuse.deployAsset(conf, collateralFactor, reserveFactor, adminFee, {
                           from: App.selectedAccount
                         });
 
-                      case 3:
+                      case 44:
                         _yield$App$fuse$deplo3 = _context8.sent;
                         _yield$App$fuse$deplo4 = _slicedToArray(_yield$App$fuse$deplo3, 3);
                         assetAddress = _yield$App$fuse$deplo4[0];
                         implementationAddress = _yield$App$fuse$deplo4[1];
                         interestRateModel = _yield$App$fuse$deplo4[2];
-                        _context8.next = 13;
+                        _context8.next = 54;
                         break;
 
-                      case 10:
-                        _context8.prev = 10;
-                        _context8.t0 = _context8["catch"](0);
-                        return _context8.abrupt("return", toastr["error"]("Deployment of asset to Fuse pool failed: " + (_context8.t0.message ? _context8.t0.message : _context8.t0), "Deployment failed"));
+                      case 51:
+                        _context8.prev = 51;
+                        _context8.t3 = _context8["catch"](41);
+                        return _context8.abrupt("return", toastr["error"]("Deployment of asset to Fuse pool failed: " + (_context8.t3.message ? _context8.t3.message : _context8.t3), "Deployment failed"));
 
-                      case 13:
+                      case 54:
                         // Mixpanel
-                        if (typeof mixpanel !== 'undefined') mixpanel.track("Asset deployed to pool", _objectSpread(_objectSpread({
+                        if (typeof mixpanel !== 'undefined') mixpanel.track("Asset deployed to pool", _objectSpread(_objectSpread({}, conf), {}, {
                           assetAddress: assetAddress,
                           implementationAddress: implementationAddress,
-                          interestRateModel: interestRateModel
-                        }, conf), {}, {
+                          interestRateModel: interestRateModel,
                           collateralFactor: collateralFactor,
                           reserveFactor: reserveFactor,
                           adminFee: adminFee
@@ -615,12 +729,12 @@ App = {
 
                         toastr["success"]("Deployment of asset to Fuse pool confirmed! Contract address: " + assetAddress, "Deployment successful");
 
-                      case 15:
+                      case 56:
                       case "end":
                         return _context8.stop();
                     }
                   }
-                }, _callee8, null, [[0, 10]]);
+                }, _callee8, null, [[28, 34], [41, 51]]);
               }))();
 
             case 11:
@@ -675,14 +789,15 @@ App = {
               html = '';
 
               for (i = 0; i < pools.length; i++) {
-                html += '<tr data-id="' + indexes[i] + '" data-name="' + pools[i].name + '" data-comptroller="' + pools[i].comptroller + '"><td scope="row">#' + (i + 1) + '</td><td><a href="https://etherscan.io/address/' + pools[i].comptroller + '">' + pools[i].name + '</a></td><td><a href="https://etherscan.io/address/' + pools[i].creator + '">' + pools[i].creator + '</a></td><td>' + new Big(totalSupplyEth[i]).div(1e18).toFormat(4) + ' ETH</td><td>' + new Big(totalBorrowEth[i]).div(1e18).toFormat(4) + ' ETH</td><td class="text-danger">Unverified</td><td class="text-right">' + new Date(pools[i].timestampPosted * 1000).toISOString() + '</td></tr>';
+                html += '<tr data-id="' + indexes[i] + '" data-name="' + pools[i].name + '" data-comptroller="' + pools[i].comptroller + '" data-creator="' + pools[i].creator + '" data-privacy="' + (pools[i].isPrivate ? 1 : 0) + '"><td scope="row">#' + (i + 1) + '</td><td><a href="https://etherscan.io/address/' + pools[i].comptroller + '">' + pools[i].name + '</a></td><td><a href="https://etherscan.io/address/' + pools[i].creator + '">' + pools[i].creator + '</a></td><td>' + new Big(totalSupplyEth[i]).div(1e18).toFormat(4) + ' ETH</td><td>' + new Big(totalBorrowEth[i]).div(1e18).toFormat(4) + ' ETH</td><td class="text-danger">Unverified</td><td class="text-right" data-toggle="tooltip" data-placement="bottom" title="' + new Date(pools[i].timestampPosted * 1000).toISOString() + '">' + timeago.format(pools[i].timestampPosted * 1000) + '</td></tr>';
               }
 
-              $('.pools-table-public tbody').html(html); // Add pool asset click handlers
+              $('.pools-table-public tbody').html(html);
+              $('.pools-table-public [data-toggle="tooltip"]').tooltip(); // Add pool asset click handlers
 
               App.bindPoolTableEvents('.pools-table-public');
 
-            case 18:
+            case 19:
             case "end":
               return _context10.stop();
           }
@@ -730,10 +845,11 @@ App = {
               html = '';
 
               for (i = 0; i < pools.length; i++) {
-                html += '<tr data-id="' + indexes[i] + '" data-name="' + pools[i].name + '" data-comptroller="' + pools[i].comptroller + '"><td scope="row">#' + (i + 1) + '</td><td><a href="https://etherscan.io/address/' + pools[i].comptroller + '">' + pools[i].name + '</a></td><td>' + new Big(totalSupplyEth[i]).div(1e18).toFormat(4) + ' ETH</td><td>' + new Big(totalBorrowEth[i]).div(1e18).toFormat(4) + ' ETH</td><td>' + (pools[i].isPrivate ? "Private" : "Public") + '</td><td class="text-danger">Unverified</td><td class="text-right">' + new Date(pools[i].timestampPosted * 1000).toISOString() + '</td></tr>';
+                html += '<tr data-id="' + indexes[i] + '" data-name="' + pools[i].name + '" data-comptroller="' + pools[i].comptroller + '" data-creator="' + App.selectedAccount + '" data-privacy="' + (pools[i].isPrivate ? 1 : 0) + '"><td scope="row">#' + (i + 1) + '</td><td><a href="https://etherscan.io/address/' + pools[i].comptroller + '">' + pools[i].name + '</a></td><td>' + new Big(totalSupplyEth[i]).div(1e18).toFormat(4) + ' ETH</td><td>' + new Big(totalBorrowEth[i]).div(1e18).toFormat(4) + ' ETH</td><td>' + (pools[i].isPrivate ? "Private" : "Public") + '</td><td class="text-danger">Unverified</td><td class="text-right" data-toggle="tooltip" data-placement="bottom" title="' + new Date(pools[i].timestampPosted * 1000).toISOString() + '">' + timeago.format(pools[i].timestampPosted * 1000) + '</td></tr>';
               }
 
               $('.pools-table-private tbody').html(html);
+              $('.pools-table-private [data-toggle="tooltip"]').tooltip();
               html = '<option selected disabled>Select a pool...</option>';
 
               for (i = 0; i < pools.length; i++) {
@@ -744,7 +860,7 @@ App = {
 
               App.bindPoolTableEvents('.pools-table-private');
 
-            case 21:
+            case 22:
             case "end":
               return _context11.stop();
           }
@@ -760,27 +876,178 @@ App = {
   }(),
 
   /**
+   * Displays a chart with interest rates by utilization rate.
+   */
+  initInterestRateModelChart: function initInterestRateModelChart(borrowerRates, supplierRates) {
+    // Init chart
+    var ctx = document.getElementById('chart-interest-rate-model').getContext('2d');
+    var color = Chart.helpers.color;
+    var cfg = {
+      data: {
+        datasets: [{
+          label: 'Borrower Rate',
+          backgroundColor: color("rgb(255, 99, 132)").alpha(0.5).rgbString(),
+          borderColor: "rgb(255, 99, 132)",
+          data: borrowerRates,
+          pointRadius: 0
+        }, {
+          label: 'Supplier Rate',
+          backgroundColor: color("rgb(54, 162, 235)").alpha(0.5).rgbString(),
+          borderColor: "rgb(54, 162, 235)",
+          data: supplierRates,
+          pointRadius: 0
+        }]
+      },
+      options: {
+        aspectRatio: 1,
+        scales: {
+          xAxes: [{
+            type: 'linear',
+            scaleLabel: {
+              display: true,
+              labelString: 'Utilization Rate (%)'
+            }
+          }],
+          yAxes: [{
+            type: 'linear',
+            scaleLabel: {
+              display: true,
+              labelString: 'APY (%)'
+            }
+          }]
+        },
+        tooltips: {
+          intersect: false,
+          mode: 'index',
+          callbacks: {
+            title: function title(tooltipItems, myData) {
+              return "Utilization: " + tooltipItems[0].xLabel + "%";
+            },
+            label: function label(tooltipItem, myData) {
+              var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+              if (label) label += ': ';
+              label += parseFloat(tooltipItem.value).toFixed(2) + "%";
+              return label;
+            }
+          }
+        }
+      }
+    };
+    var chart = Chart.Line(ctx, cfg);
+  },
+
+  /**
    * Adds click handlers to pool assets.
    */
   bindPoolTableEvents: function bindPoolTableEvents(selector) {
     // Pool click handlers
     $(selector + ' tbody tr').click( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee24() {
-      var comptroller, cTokens, html, i, underlyingDecimals, data, borrowers, closeFactor, liquidationIncentive, _iterator, _step, borrower, _iterator2, _step2, asset, debtAmount, liquidationAmount, underlyingDebtPrice, underlyingCollateralPrice, liquidationValueEth, seizeAmountEth, seizeAmount, actualCollateral, expectedGasAmount, gasPrice, expectedGasFee, expectedRevenue, expectedProfit, minSeizeAmount;
+      var comptroller, comptrollerInstance, priceOracle, priceOracleContractName, potentialName, cTokens, html, i, underlyingDecimals, data, borrowers, closeFactor, liquidationIncentive, _iterator, _step, borrower, _iterator2, _step2, asset, underlyingDebtPrice, underlyingCollateralPrice, debtAmount, liquidationAmount, liquidationValueEth, seizeAmountEth, seizeAmount, actualCollateral, expectedGasAmount, gasPrice, expectedGasFee, expectedRevenue, expectedProfit, minSeizeAmount;
 
       return regeneratorRuntime.wrap(function _callee24$(_context24) {
         while (1) {
           switch (_context24.prev = _context24.next) {
             case 0:
               // Set pool name
-              $('.pool-detailed-name').text($(this).data("name")); // Add assets to tables
+              $('.pool-detailed-name').text($(this).data("name")); // Get comptroller address and contract
 
               comptroller = $(this).data("comptroller");
-              _context24.next = 4;
+              comptrollerInstance = new App.web3.eth.Contract(App.comptrollerAbi, comptroller); // Get price oracle contract name and type
+
+              _context24.next = 5;
+              return comptrollerInstance.methods.oracle().call();
+
+            case 5:
+              priceOracle = _context24.sent;
+              priceOracleContractName = priceOracle;
+
+              if (!(priceOracle == Fuse.PUBLIC_CHAINLINK_PRICE_ORACLE_CONTRACT_ADDRESS)) {
+                _context24.next = 11;
+                break;
+              }
+
+              priceOracleContractName = "\u2714\uFE0F ChainlinkPriceOracle";
+              _context24.next = 23;
+              break;
+
+            case 11:
+              if (!(priceOracle == Fuse.PUBLIC_UNISWAP_VIEW_CONTRACT_ADDRESS)) {
+                _context24.next = 15;
+                break;
+              }
+
+              priceOracleContractName = "\u26A0\uFE0F UniswapView - Public";
+              _context24.next = 23;
+              break;
+
+            case 15:
+              if (!(priceOracle == Fuse.PUBLIC_PREFERRED_PRICE_ORACLE_CONTRACT_ADDRESS)) {
+                _context24.next = 19;
+                break;
+              }
+
+              priceOracleContractName = "\u26A0\uFE0F PreferredPriceOracle - Public";
+              _context24.next = 23;
+              break;
+
+            case 19:
+              _context24.next = 21;
+              return App.fuse.getPriceOracle(priceOracle);
+
+            case 21:
+              potentialName = _context24.sent;
+
+              if (potentialName !== null) {
+                priceOracleContractName = potentialName;
+                if (priceOracleContractName === "PreferredPriceOracle") priceOracleContractName = "\u26A0\uFE0F\u26A0\uFE0F PreferredPriceOracle - Private";else if (priceOracleContractName === "UniswapView") priceOracleContractName = "\u26A0\uFE0F\u26A0\uFE0F UniswapAnchoredView - Private";else if (priceOracleContractName === "UniswapAnchoredView") priceOracleContractName = "\u26A0\uFE0F\u26A0\uFE0F UniswapAnchoredView - Private";
+              }
+
+            case 23:
+              // Set pool details/stats
+              $('.pool-detailed-creator').text($(this).data("creator"));
+              _context24.t0 = $('.pool-detailed-close-factor');
+              _context24.t1 = Big;
+              _context24.next = 28;
+              return comptrollerInstance.methods.closeFactorMantissa().call();
+
+            case 28:
+              _context24.t2 = _context24.sent;
+              _context24.t3 = new _context24.t1(_context24.t2).div(1e18).toFormat(4);
+
+              _context24.t0.text.call(_context24.t0, _context24.t3);
+
+              _context24.t4 = $('.pool-detailed-max-assets');
+              _context24.t5 = Big;
+              _context24.next = 35;
+              return comptrollerInstance.methods.maxAssets().call();
+
+            case 35:
+              _context24.t6 = _context24.sent;
+              _context24.t7 = new _context24.t5(_context24.t6).div(1e18).toFormat(4);
+
+              _context24.t4.text.call(_context24.t4, _context24.t7);
+
+              _context24.t8 = $('.pool-detailed-liquidation-incentive');
+              _context24.t9 = Big;
+              _context24.next = 42;
+              return comptrollerInstance.methods.liquidationIncentiveMantissa().call();
+
+            case 42:
+              _context24.t10 = _context24.sent;
+              _context24.t11 = new _context24.t9(_context24.t10).div(1e18).toFormat(4);
+
+              _context24.t8.text.call(_context24.t8, _context24.t11);
+
+              $('.pool-detailed-oracle').text(priceOracleContractName); // Get oracle name from bytecode
+
+              $('.pool-detailed-privacy').text(parseInt($(this).data("privacy")) > 0 ? "Private" : "Public"); // Add assets to tables
+
+              _context24.next = 49;
               return App.fuse.contracts.FusePoolDirectory.methods.getPoolAssetsWithData(comptroller).call({
                 from: App.selectedAccount
               });
 
-            case 4:
+            case 49:
               cTokens = _context24.sent;
               html = '';
 
@@ -800,7 +1067,7 @@ App = {
               $('.pool-detailed-table-assets-borrow tbody').html(html); // APY click handler
 
               $('.pool-detailed-table-assets-supply .apy, .pool-detailed-table-assets-borrow .apy').click( /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee12() {
-                var interestRateModel, html, i;
+                var interestRateModel, borrowerRates, supplierRates, i;
                 return regeneratorRuntime.wrap(function _callee12$(_context12) {
                   while (1) {
                     switch (_context12.prev = _context12.next) {
@@ -810,16 +1077,33 @@ App = {
 
                       case 2:
                         interestRateModel = _context12.sent;
-                        html = '';
 
-                        for (i = 0; i <= 100; i += 10) {
-                          html += '<tr><td>' + i.toString() + '</td><td>' + new Big(interestRateModel.getBorrowRate(Web3.utils.toBN(i * 1e16)).toString()).mul(2372500).div(1e16).toFormat(2) + '</td><td>' + new Big(interestRateModel.getSupplyRate(Web3.utils.toBN(i * 1e16)).toString()).mul(2372500).div(1e16).toFormat(2) + '</td></tr>';
+                        if (!(interestRateModel === null)) {
+                          _context12.next = 5;
+                          break;
                         }
 
-                        $('#modal-interest-rate-model table tbody').html(html);
+                        return _context12.abrupt("return", toastr["error"]("Interest rate model not recognized.", "APY predictions failed"));
+
+                      case 5:
+                        borrowerRates = [];
+                        supplierRates = [];
+
+                        for (i = 0; i <= 100; i++) {
+                          borrowerRates.push({
+                            x: i,
+                            y: Number(new Big(interestRateModel.getBorrowRate(Web3.utils.toBN(i * 1e16)).toString()).mul(2372500).div(1e16))
+                          });
+                          supplierRates.push({
+                            x: i,
+                            y: Number(new Big(interestRateModel.getSupplyRate(Web3.utils.toBN(i * 1e16)).toString()).mul(2372500).div(1e16))
+                          });
+                        }
+
+                        App.initInterestRateModelChart(borrowerRates, supplierRates);
                         $('#modal-interest-rate-model').modal('show');
 
-                      case 7:
+                      case 10:
                       case "end":
                         return _context12.stop();
                     }
@@ -827,10 +1111,10 @@ App = {
                 }, _callee12, this);
               }))); // Unhealthy accounts table
 
-              _context24.next = 14;
+              _context24.next = 59;
               return App.fuse.contracts.FusePoolDirectory.methods.getPoolUsersWithData(comptroller, Web3.utils.toBN(1e18)).call();
 
-            case 14:
+            case 59:
               data = _context24.sent;
               borrowers = data["0"];
               borrowers.sort(function (a, b) {
@@ -840,13 +1124,13 @@ App = {
               liquidationIncentive = new Big(data["2"]).div(1e18);
               html = '';
               _iterator = _createForOfIteratorHelper(borrowers);
-              _context24.prev = 21;
+              _context24.prev = 66;
 
               _iterator.s();
 
-            case 23:
+            case 68:
               if ((_step = _iterator.n()).done) {
-                _context24.next = 76;
+                _context24.next = 121;
                 break;
               }
 
@@ -880,12 +1164,13 @@ App = {
                 return b.supplyBalanceEth.gt(a.supplyBalanceEth);
               }); // Get max liquidation value across all borrows
 
-              borrower.maxLiquidationValue = new Big(borrower.totalBorrow).mul(closeFactor).div(1e18); // Get liquidation amount
+              borrower.maxLiquidationValue = new Big(borrower.totalBorrow).mul(closeFactor).div(1e18); // Get debt and collateral prices
+
+              underlyingDebtPrice = new Big(borrower.debt[0].underlyingPrice).div(new Big(10).pow(36 - borrower.debt[0].underlyingDecimals));
+              underlyingCollateralPrice = new Big(borrower.collateral[0].underlyingPrice).div(new Big(10).pow(36 - borrower.collateral[0].underlyingDecimals)); // Get liquidation amount
 
               debtAmount = new Big(borrower.debt[0].borrowBalance).div(new Big(10).pow(parseInt(borrower.debt[0].underlyingDecimals)));
               liquidationAmount = debtAmount.mul(closeFactor);
-              underlyingDebtPrice = new Big(borrower.debt[0].underlyingPrice).div(new Big(10).pow(36 - borrower.debt[0].underlyingDecimals));
-              underlyingCollateralPrice = new Big(borrower.collateral[0].underlyingPrice).div(new Big(10).pow(36 - borrower.collateral[0].underlyingDecimals));
               liquidationValueEth = liquidationAmount.mul(underlyingDebtPrice); // Get seize amount
 
               seizeAmountEth = liquidationValueEth.mul(liquidationIncentive);
@@ -906,52 +1191,52 @@ App = {
               borrower.predictions.push("Collect " + seizeAmount.toFormat(8) + borrower.collateral[0].underlyingSymbol + " (" + seizeAmountEth.toFormat(8) + " ETH) collateral"); // Calculate expected gas fee
 
               expectedGasAmount = 0;
-              _context24.prev = 46;
+              _context24.prev = 91;
 
               if (!(borrower.debt[0].underlyingSymbol === 'ETH')) {
-                _context24.next = 53;
+                _context24.next = 98;
                 break;
               }
 
-              _context24.next = 50;
+              _context24.next = 95;
               return App.fuse.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({
                 gas: 1e9,
                 value: liquidationAmount.mul(new Big(10).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0),
                 from: App.selectedAccount
               });
 
-            case 50:
+            case 95:
               expectedGasAmount = _context24.sent;
-              _context24.next = 56;
+              _context24.next = 101;
               break;
 
-            case 53:
-              _context24.next = 55;
+            case 98:
+              _context24.next = 100;
               return App.fuse.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, liquidationAmount.mul(new Big(10).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0), borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({
                 gas: 1e9,
                 from: App.selectedAccount
               });
 
-            case 55:
+            case 100:
               expectedGasAmount = _context24.sent;
 
-            case 56:
-              _context24.next = 61;
+            case 101:
+              _context24.next = 106;
               break;
 
-            case 58:
-              _context24.prev = 58;
-              _context24.t0 = _context24["catch"](46);
+            case 103:
+              _context24.prev = 103;
+              _context24.t12 = _context24["catch"](91);
               expectedGasAmount = 600000;
 
-            case 61:
-              _context24.t1 = Big;
-              _context24.next = 64;
+            case 106:
+              _context24.t13 = Big;
+              _context24.next = 109;
               return App.web3.eth.getGasPrice();
 
-            case 64:
-              _context24.t2 = _context24.sent;
-              gasPrice = new _context24.t1(_context24.t2).div(1e18);
+            case 109:
+              _context24.t14 = _context24.sent;
+              gasPrice = new _context24.t13(_context24.t14).div(1e18);
               expectedGasFee = gasPrice.mul(expectedGasAmount);
               borrower.predictions.push("Gas Amount = " + expectedGasAmount + ", Gas Fee = " + expectedGasFee.toFormat(8) + " ETH"); // Calculate expected profit after gas fees
 
@@ -974,28 +1259,28 @@ App = {
                 return '<li key="' + i + '">' + tx + '</li>';
               }) + "</ul>\n          </td>\n          <td><button type=\"button\" class=\"btn btn-info btn-sm button-liquidate\">Liquidate</button></td>\n        </tr>";
 
-            case 74:
-              _context24.next = 23;
+            case 119:
+              _context24.next = 68;
               break;
 
-            case 76:
-              _context24.next = 81;
+            case 121:
+              _context24.next = 126;
               break;
 
-            case 78:
-              _context24.prev = 78;
-              _context24.t3 = _context24["catch"](21);
+            case 123:
+              _context24.prev = 123;
+              _context24.t15 = _context24["catch"](66);
 
-              _iterator.e(_context24.t3);
+              _iterator.e(_context24.t15);
 
-            case 81:
-              _context24.prev = 81;
+            case 126:
+              _context24.prev = 126;
 
               _iterator.f();
 
-              return _context24.finish(81);
+              return _context24.finish(126);
 
-            case 84:
+            case 129:
               $('.pool-detailed-table-liquidations tbody').html(html); // Switch pages
 
               $('#page-pools').hide();
@@ -1574,12 +1859,12 @@ App = {
                 }, _callee23, this);
               })));
 
-            case 93:
+            case 138:
             case "end":
               return _context24.stop();
           }
         }
-      }, _callee24, this, [[21, 78, 81, 84], [46, 58]]);
+      }, _callee24, this, [[66, 123, 126, 129], [91, 103]]);
     })));
   }
 };

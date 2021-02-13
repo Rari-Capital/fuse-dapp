@@ -694,11 +694,13 @@ App = {
         // Get max liquidation value across all borrows
         borrower.maxLiquidationValue = new Big(borrower.totalBorrow).mul(closeFactor).div(1e18);
 
+        // Get debt and collateral prices
+        const underlyingDebtPrice = (new Big(borrower.debt[0].underlyingPrice)).div((new Big(10)).pow(36 - borrower.debt[0].underlyingDecimals));
+        const underlyingCollateralPrice = (new Big(borrower.collateral[0].underlyingPrice)).div((new Big(10)).pow(36 - borrower.collateral[0].underlyingDecimals));
+
         // Get liquidation amount
         var debtAmount = new Big(borrower.debt[0].borrowBalance).div((new Big(10)).pow(parseInt(borrower.debt[0].underlyingDecimals)));
         var liquidationAmount = debtAmount.mul(closeFactor);
-        const underlyingDebtPrice = (new Big(borrower.debt[0].underlyingPrice)).div((new Big(10)).pow(36 - borrower.debt[0].underlyingDecimals));
-        const underlyingCollateralPrice = (new Big(borrower.collateral[0].underlyingPrice)).div((new Big(10)).pow(36 - borrower.collateral[0].underlyingDecimals));
         var liquidationValueEth = liquidationAmount.mul(underlyingDebtPrice);
 
         // Get seize amount
