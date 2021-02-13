@@ -221,7 +221,11 @@
                   <option value="UniswapAnchoredView">UniswapAnchoredView (Coinbase Pro anchored by Uniswap TWAPs)</option>
                   <option value="PreferredPriceOracle">PreferredPriceOracle (ChainlinkPriceOracle + UniswapView)</option>
                   <option value="UniswapView">UniswapView (Uniswap TWAPs)</option>
+                  <option value="">Other...</option>
                 </select>
+              </div>
+              <div class="input-group input-group-lg" style="border-bottom: 1px solid white; display: none;" id="DeployPoolPriceOracleOtherWrapper">
+                <input type="text" class="form-control" id="DeployPoolPriceOracleOther" placeholder="Price Oracle Contract Address" />
               </div>
               <div class="input-group input-group-lg">
                 <select class="custom-select" id="DeployPoolPrivate">
@@ -265,7 +269,11 @@
                   <!--<option value="DAIInterestRateModelV2(2e18,9e17)">DAIInterestRateModelV2 (2e18, 9e17)</option>-->
                   <!--<option value="DAIInterestRateModelV2">DAIInterestRateModelV2 (new)</option>-->
                   <!--<option value="DAIInterestRateModelV3" disabled>DAIInterestRateModelV3</option>-->
+                  <option value="">Other...</option>
                 </select>
+              </div>
+              <div class="input-group input-group-lg" style="border-bottom: 1px solid white; display: none;" id="DeployAssetInterestRateModelOtherWrapper">
+                <input type="text" class="form-control" id="DeployAssetInterestRateModelOther" placeholder="Interest Rate Model Contract Address" />
               </div>
               <div class="input-group input-group-lg" style="border-bottom: 1px solid white;">
                 <input type="text" class="form-control" id="DeployAssetName" placeholder="Name (e.g., Compound DAI)" required />

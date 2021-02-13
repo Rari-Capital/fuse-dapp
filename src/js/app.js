@@ -315,6 +315,14 @@ App = {
       }
     });
 
+    $(document).on('change', '#DeployPoolPriceOracle', function() {
+      $('#DeployPoolPriceOracle').val() && $('#DeployPoolPriceOracle').val().length > 0 ? $('#DeployPoolPriceOracleOtherWrapper').hide() : $('#DeployPoolPriceOracleOtherWrapper').show();
+    });
+
+    $(document).on('change', '#DeployAssetInterestRateModel', function() {
+      $('#DeployAssetInterestRateModel').val() && $('#DeployAssetInterestRateModel').val().length > 0 ? $('#DeployAssetInterestRateModelOtherWrapper').hide() : $('#DeployAssetInterestRateModelOtherWrapper').show();
+    });
+
     $(document).on('click', '#deployPoolButton', App.handleDeployPool);
     $(document).on('click', '#deployAssetButton', App.handleDeployAsset);
   },
@@ -334,7 +342,7 @@ App = {
     var liquidationIncentive = $('#DeployPoolLiquidationIncentive').val();
     if (liquidationIncentive === "") liquidationIncentive = Web3.utils.toBN(1.08e18);
     else liquidationIncentive = Web3.utils.toBN((new Big(liquidationIncentive)).mul((new Big(10)).pow(18)).toFixed(0));
-    var priceOracle = $('#DeployPoolPriceOracle').val();
+    var priceOracle = $('#DeployPoolPriceOracle').val() && $('#DeployPoolPriceOracle').val().length > 0 ? $('#DeployPoolPriceOracle').val() : $('#DeployPoolPriceOracleOther').val();
     // TODO: Correct public PreferredPriceOracle and public UniswapView addresses
     if (priceOracle === "PreferredPriceOracle" && Fuse.PUBLIC_PREFERRED_PRICE_ORACLE_CONTRACT_ADDRESS && confirm("Would you like to use the public PreferredPriceOracle? There is no reason to say no unless you need to use SushiSwap (or another Uniswap V2 fork) or you need to set fixed prices for tokens other than WETH.")) priceOracle = Fuse.PUBLIC_PREFERRED_PRICE_ORACLE_CONTRACT_ADDRESS;
     if (priceOracle === "UniswapView" && Fuse.PUBLIC_UNISWAP_VIEW_CONTRACT_ADDRESS && confirm("Would you like to use the public UniswapView? There is no reason to say no unless you need to use SushiSwap (or another Uniswap V2 fork) or you need to set fixed prices for tokens other than WETH.")) priceOracle = Fuse.PUBLIC_UNISWAP_VIEW_CONTRACT_ADDRESS;
@@ -375,7 +383,7 @@ App = {
     var conf = {
       underlying: $('#DeployAssetUnderlying').val(),
       comptroller: $('#DeployAssetPool').val(),
-      interestRateModel: $('#DeployAssetInterestRateModel').val(),
+      interestRateModel: $('#DeployAssetInterestRateModel').val() && $('#DeployAssetInterestRateModel').val().length > 0 ? $('#DeployAssetInterestRateModel').val() : $('#DeployAssetInterestRateModelOther').val(),
       initialExchangeRateMantissa: Web3.utils.toBN(1e18),
       name: $('#DeployAssetName').val(),
       symbol: $('#DeployAssetSymbol').val(),
