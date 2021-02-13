@@ -545,8 +545,35 @@ App = {
       // Set pool name
       $('.pool-detailed-name').text($(this).data("name"));
 
-      // Add assets to tables
+      // Get comptroller address and contract
       var comptroller = $(this).data("comptroller");
+      var comptrollerInstance = new App.web3.eth.Contract(App.comptrollerAbi, comptroller);
+
+      // Get price oracle contract name and type
+      var priceOracle = await comptrollerInstance.methods.oracle().call();
+      var priceOracleContractName = priceOracle;
+      if (priceOracle == Fuse.PUBLIC_CHAINLINK_PRICE_ORACLE_CONTRACT_ADDRESS) priceOracleContractName = "\u2714\uFE0F ChainlinkPriceOracle";
+      else if (priceOracle == Fuse.PUBLIC_UNISWAP_VIEW_CONTRACT_ADDRESS) priceOracleContractName = "\u26A0\uFE0F UniswapView - Public";
+      else if (priceOracle == Fuse.PUBLIC_PREFERRED_PRICE_ORACLE_CONTRACT_ADDRESS) priceOracleContractName = "\u26A0\uFE0F PreferredPriceOracle - Public";
+      else {
+        var potentialName = await App.fuse.getPriceOracle(priceOracle);
+        if (potentialName !== null) {
+          priceOracleContractName = potentialName;
+          if (priceOracleContractName === "PreferredPriceOracle") priceOracleContractName = "\u26A0\uFE0F\u26A0\uFE0F PreferredPriceOracle - Private";
+          else if (priceOracleContractName === "UniswapView") priceOracleContractName = "\u26A0\uFE0F\u26A0\uFE0F UniswapAnchoredView - Private";
+          else if (priceOracleContractName === "UniswapAnchoredView") priceOracleContractName = "\u26A0\uFE0F\u26A0\uFE0F UniswapAnchoredView - Private";
+        }
+      }
+
+      // Set pool details/stats
+      $('.pool-detailed-creator').text($(this).data("creator"));
+      $('.pool-detailed-close-factor').text((new Big(await comptrollerInstance.methods.closeFactorMantissa().call())).div(1e18).toFormat(4));
+      $('.pool-detailed-max-assets').text((new Big(await comptrollerInstance.methods.maxAssets().call())).div(1e18).toFormat(4));
+      $('.pool-detailed-liquidation-incentive').text((new Big(await comptrollerInstance.methods.liquidationIncentiveMantissa().call())).div(1e18).toFormat(4));
+      $('.pool-detailed-oracle').text(priceOracleContractName); // Get oracle name from bytecode
+      $('.pool-detailed-privacy').text(parseInt($(this).data("privacy")) > 0 ? "Private" : "Public");
+
+      // Add assets to tables
       var cTokens = await App.fuse.contracts.FusePoolDirectory.methods.getPoolAssetsWithData(comptroller).call({ from: App.selectedAccount });
       var html = '';
       for (var i = 0; i < cTokens.length; i++) {
