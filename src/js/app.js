@@ -434,8 +434,9 @@ App = {
     var totalSupplyEth = data["2"];
     var totalBorrowEth = data["3"];
     var html = '';
-    for (var i = 0; i < pools.length; i++) html += '<tr data-id="' + indexes[i] + '" data-name="' + pools[i].name + '" data-comptroller="' + pools[i].comptroller + '"><td scope="row">#' + (i + 1) + '</td><td><a href="https://etherscan.io/address/' + pools[i].comptroller + '">' + pools[i].name + '</a></td><td><a href="https://etherscan.io/address/' + pools[i].creator + '">' + pools[i].creator + '</a></td><td>' + (new Big(totalSupplyEth[i])).div(1e18).toFormat(4) + ' ETH</td><td>' + (new Big(totalBorrowEth[i])).div(1e18).toFormat(4) + ' ETH</td><td class="text-danger">Unverified</td><td class="text-right">' + (new Date(pools[i].timestampPosted * 1000)).toISOString() + '</td></tr>';
+    for (var i = 0; i < pools.length; i++) html += '<tr data-id="' + indexes[i] + '" data-name="' + pools[i].name + '" data-comptroller="' + pools[i].comptroller + '" data-creator="' + pools[i].creator + '" data-privacy="' + (pools[i].isPrivate ? 1 : 0) + '"><td scope="row">#' + (i + 1) + '</td><td><a href="https://etherscan.io/address/' + pools[i].comptroller + '">' + pools[i].name + '</a></td><td><a href="https://etherscan.io/address/' + pools[i].creator + '">' + pools[i].creator + '</a></td><td>' + (new Big(totalSupplyEth[i])).div(1e18).toFormat(4) + ' ETH</td><td>' + (new Big(totalBorrowEth[i])).div(1e18).toFormat(4) + ' ETH</td><td class="text-danger">Unverified</td><td class="text-right" data-toggle="tooltip" data-placement="bottom" title="' + (new Date(pools[i].timestampPosted * 1000)).toISOString() + '">' + timeago.format(pools[i].timestampPosted * 1000) + '</td></tr>';
     $('.pools-table-public tbody').html(html);
+    $('.pools-table-public [data-toggle="tooltip"]').tooltip();
 
     // Add pool asset click handlers
     App.bindPoolTableEvents('.pools-table-public');
@@ -459,8 +460,9 @@ App = {
     var totalSupplyEth = data["2"];
     var totalBorrowEth = data["3"];
     var html = '';
-    for (var i = 0; i < pools.length; i++) html += '<tr data-id="' + indexes[i] + '" data-name="' + pools[i].name + '" data-comptroller="' + pools[i].comptroller + '"><td scope="row">#' + (i + 1) + '</td><td><a href="https://etherscan.io/address/' + pools[i].comptroller + '">' + pools[i].name + '</a></td><td>' + (new Big(totalSupplyEth[i])).div(1e18).toFormat(4) + ' ETH</td><td>' + (new Big(totalBorrowEth[i])).div(1e18).toFormat(4) + ' ETH</td><td>' + (pools[i].isPrivate ? "Private" : "Public") + '</td><td class="text-danger">Unverified</td><td class="text-right">' + (new Date(pools[i].timestampPosted * 1000)).toISOString() + '</td></tr>';
+    for (var i = 0; i < pools.length; i++) html += '<tr data-id="' + indexes[i] + '" data-name="' + pools[i].name + '" data-comptroller="' + pools[i].comptroller + '" data-creator="' + App.selectedAccount + '" data-privacy="' + (pools[i].isPrivate ? 1 : 0) + '"><td scope="row">#' + (i + 1) + '</td><td><a href="https://etherscan.io/address/' + pools[i].comptroller + '">' + pools[i].name + '</a></td><td>' + (new Big(totalSupplyEth[i])).div(1e18).toFormat(4) + ' ETH</td><td>' + (new Big(totalBorrowEth[i])).div(1e18).toFormat(4) + ' ETH</td><td>' + (pools[i].isPrivate ? "Private" : "Public") + '</td><td class="text-danger">Unverified</td><td class="text-right" data-toggle="tooltip" data-placement="bottom" title="' + (new Date(pools[i].timestampPosted * 1000)).toISOString() + '">' + timeago.format(pools[i].timestampPosted * 1000) + '</td></tr>';
     $('.pools-table-private tbody').html(html);
+    $('.pools-table-private [data-toggle="tooltip"]').tooltip();
     html = '<option selected disabled>Select a pool...</option>';
     for (var i = 0; i < pools.length; i++) html += '<option value="' + pools[i].comptroller + '" data-id="' + indexes[i] + '">' + pools[i].name + '</option>';
     $('#DeployAssetPool').html(html);
