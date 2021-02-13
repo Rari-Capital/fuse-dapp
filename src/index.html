@@ -217,10 +217,14 @@
               </div>
               <div class="input-group input-group-lg" style="border-bottom: 1px solid white;">
                 <select class="custom-select" id="DeployPoolPriceOracle">
-                  <option selected value="ChainlinkPriceOracle">ChainlinkPriceOracle</option>
+                  <option value="0x5fdbfc67a415a811dd8e5de570ddf65207ceb94f">ChainlinkPriceOracle</option>
                   <option value="UniswapAnchoredView">UniswapAnchoredView (Coinbase Pro anchored by Uniswap TWAPs)</option>
-                  <option value="PreferredPriceOracle">PreferredPriceOracle (ChainlinkPriceOracle + UniswapView)</option>
-                  <option value="UniswapView">UniswapView (Uniswap TWAPs)</option>
+                  <option value="UniswapAnchoredView">UniswapAnchoredView (centralized oracle anchored by Uniswap TWAPs)</option>
+                  <option selected value="0x68aa7c6be5eDbb8434dCE624b8583FE4c25Cac8B">PreferredPriceOracle - Public (ChainlinkPriceOracle + UniswapView)</option>
+                  <option value="PreferredPriceOracle">PreferredPriceOracle - Private (ChainlinkPriceOracle + UniswapView)</option>
+                  <option value="0x68ae90e1da41761aad06a7f188584ca806012f5e">UniswapView - Public (Uniswap TWAPs)</option>
+                  <option value="UniswapView">UniswapView - Private (Uniswap TWAPs)</option>
+                  <option value="UniswapView">UniswapView - Private (Uniswap TWAPs)</option>
                   <option value="">Other...</option>
                 </select>
               </div>
