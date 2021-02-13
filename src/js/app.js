@@ -537,6 +537,69 @@ App = {
   },
 
   /**
+   * Displays a chart with interest rates by utilization rate.
+   */
+  initInterestRateModelChart: function(borrowerRates, supplierRates) {
+    // Init chart
+    var ctx = document.getElementById('chart-interest-rate-model').getContext('2d');
+    var color = Chart.helpers.color;
+
+    var cfg = {
+      data: {
+        datasets: [{
+          label: 'Borrower Rate',
+          backgroundColor: color("rgb(255, 99, 132)").alpha(0.5).rgbString(),
+          borderColor: "rgb(255, 99, 132)",
+          data: borrowerRates,
+          pointRadius: 0,
+        }, {
+          label: 'Supplier Rate',
+          backgroundColor: color("rgb(54, 162, 235)").alpha(0.5).rgbString(),
+          borderColor: "rgb(54, 162, 235)",
+          data: supplierRates,
+          pointRadius: 0,
+        }]
+      },
+      options: {
+        aspectRatio: 1,
+        scales: {
+          xAxes: [{
+						type: 'linear',
+            scaleLabel: {
+              display: true,
+              labelString: 'Utilization Rate (%)'
+            }
+          }],
+          yAxes: [{
+						type: 'linear',
+            scaleLabel: {
+              display: true,
+              labelString: 'APY (%)'
+            }
+          }]
+        },
+        tooltips: {
+          intersect: false,
+          mode: 'index',
+          callbacks: {
+            title: function(tooltipItems, myData) {
+              return "Utilization: " + tooltipItems[0].xLabel + "%";
+            },
+            label: function(tooltipItem, myData) {
+              var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+              if (label) label += ': ';
+              label += parseFloat(tooltipItem.value).toFixed(2) + "%";
+              return label;
+            }
+          }
+        }
+      }
+    };
+
+    var chart = Chart.Line(ctx, cfg);
+  },
+
+  /**
    * Adds click handlers to pool assets.
    */
   bindPoolTableEvents: function(selector) {
@@ -591,9 +654,14 @@ App = {
       // APY click handler
       $('.pool-detailed-table-assets-supply .apy, .pool-detailed-table-assets-borrow .apy').click(async function() {
         var interestRateModel = await App.fuse.getInterestRateModel($(this).closest('tr').data("ctoken"));
-        var html = '';
-        for (var i = 0; i <= 100; i += 10) html += '<tr><td>' + i.toString() + '</td><td>' + (new Big(interestRateModel.getBorrowRate(Web3.utils.toBN(i * 1e16)).toString())).mul(2372500).div(1e16).toFormat(2) + '</td><td>' + (new Big(interestRateModel.getSupplyRate(Web3.utils.toBN(i * 1e16)).toString())).mul(2372500).div(1e16).toFormat(2) + '</td></tr>';
-        $('#modal-interest-rate-model table tbody').html(html);
+        if (interestRateModel === null) return toastr["error"]("Interest rate model not recognized.", "APY predictions failed");
+        var borrowerRates = [];
+        var supplierRates = [];
+        for (var i = 0; i <= 100; i++) {
+          borrowerRates.push({ x: i, y: Number((new Big(interestRateModel.getBorrowRate(Web3.utils.toBN(i * 1e16)).toString())).mul(2372500).div(1e16)) });
+          supplierRates.push({ x: i, y: Number((new Big(interestRateModel.getSupplyRate(Web3.utils.toBN(i * 1e16)).toString())).mul(2372500).div(1e16)) });
+        }
+        App.initInterestRateModelChart(borrowerRates, supplierRates);
         $('#modal-interest-rate-model').modal('show');
       });
 
