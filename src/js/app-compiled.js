@@ -912,7 +912,7 @@ App = {
             type: 'linear',
             scaleLabel: {
               display: true,
-              labelString: 'APY (%)'
+              labelString: 'Interest Rate (%)'
             }
           }]
         },
