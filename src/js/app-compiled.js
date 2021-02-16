@@ -1017,37 +1017,35 @@ App = {
               _context24.t0.text.call(_context24.t0, _context24.t3);
 
               _context24.t4 = $('.pool-detailed-max-assets');
-              _context24.t5 = Big;
-              _context24.next = 35;
+              _context24.next = 34;
               return comptrollerInstance.methods.maxAssets().call();
 
-            case 35:
-              _context24.t6 = _context24.sent;
-              _context24.t7 = new _context24.t5(_context24.t6).div(1e18).toFormat(4);
+            case 34:
+              _context24.t5 = _context24.sent;
 
-              _context24.t4.text.call(_context24.t4, _context24.t7);
+              _context24.t4.text.call(_context24.t4, _context24.t5);
 
-              _context24.t8 = $('.pool-detailed-liquidation-incentive');
-              _context24.t9 = Big;
-              _context24.next = 42;
+              _context24.t6 = $('.pool-detailed-liquidation-incentive');
+              _context24.t7 = Big;
+              _context24.next = 40;
               return comptrollerInstance.methods.liquidationIncentiveMantissa().call();
 
-            case 42:
-              _context24.t10 = _context24.sent;
-              _context24.t11 = new _context24.t9(_context24.t10).div(1e18).toFormat(4);
+            case 40:
+              _context24.t8 = _context24.sent;
+              _context24.t9 = new _context24.t7(_context24.t8).div(1e18).toFormat(4);
 
-              _context24.t8.text.call(_context24.t8, _context24.t11);
+              _context24.t6.text.call(_context24.t6, _context24.t9);
 
               $('.pool-detailed-oracle').text(priceOracleContractName); // Get oracle name from bytecode
 
               $('.pool-detailed-privacy').text(parseInt($(this).data("privacy")) > 0 ? "Private" : "Public"); // Add assets to tables
 
-              _context24.next = 49;
+              _context24.next = 47;
               return App.fuse.contracts.FusePoolDirectory.methods.getPoolAssetsWithData(comptroller).call({
                 from: App.selectedAccount
               });
 
-            case 49:
+            case 47:
               cTokens = _context24.sent;
               html = '';
 
@@ -1111,10 +1109,10 @@ App = {
                 }, _callee12, this);
               }))); // Unhealthy accounts table
 
-              _context24.next = 59;
+              _context24.next = 57;
               return App.fuse.contracts.FusePoolDirectory.methods.getPoolUsersWithData(comptroller, Web3.utils.toBN(1e18)).call();
 
-            case 59:
+            case 57:
               data = _context24.sent;
               borrowers = data["0"];
               borrowers.sort(function (a, b) {
@@ -1124,13 +1122,13 @@ App = {
               liquidationIncentive = new Big(data["2"]).div(1e18);
               html = '';
               _iterator = _createForOfIteratorHelper(borrowers);
-              _context24.prev = 66;
+              _context24.prev = 64;
 
               _iterator.s();
 
-            case 68:
+            case 66:
               if ((_step = _iterator.n()).done) {
-                _context24.next = 121;
+                _context24.next = 119;
                 break;
               }
 
@@ -1191,52 +1189,52 @@ App = {
               borrower.predictions.push("Collect " + seizeAmount.toFormat(8) + borrower.collateral[0].underlyingSymbol + " (" + seizeAmountEth.toFormat(8) + " ETH) collateral"); // Calculate expected gas fee
 
               expectedGasAmount = 0;
-              _context24.prev = 91;
+              _context24.prev = 89;
 
               if (!(borrower.debt[0].underlyingSymbol === 'ETH')) {
-                _context24.next = 98;
+                _context24.next = 96;
                 break;
               }
 
-              _context24.next = 95;
+              _context24.next = 93;
               return App.fuse.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({
                 gas: 1e9,
                 value: liquidationAmount.mul(new Big(10).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0),
                 from: App.selectedAccount
               });
 
-            case 95:
+            case 93:
               expectedGasAmount = _context24.sent;
-              _context24.next = 101;
+              _context24.next = 99;
               break;
 
-            case 98:
-              _context24.next = 100;
+            case 96:
+              _context24.next = 98;
               return App.fuse.contracts.FuseSafeLiquidator.methods.safeLiquidate(borrower.account, liquidationAmount.mul(new Big(10).pow(parseInt(borrower.debt[0].underlyingDecimals))).toFixed(0), borrower.debt[0].cToken, borrower.collateral[0].cToken, 0, borrower.collateral[0].cToken).estimateGas({
                 gas: 1e9,
                 from: App.selectedAccount
               });
 
-            case 100:
+            case 98:
               expectedGasAmount = _context24.sent;
 
-            case 101:
-              _context24.next = 106;
+            case 99:
+              _context24.next = 104;
               break;
 
-            case 103:
-              _context24.prev = 103;
-              _context24.t12 = _context24["catch"](91);
+            case 101:
+              _context24.prev = 101;
+              _context24.t10 = _context24["catch"](89);
               expectedGasAmount = 600000;
 
-            case 106:
-              _context24.t13 = Big;
-              _context24.next = 109;
+            case 104:
+              _context24.t11 = Big;
+              _context24.next = 107;
               return App.web3.eth.getGasPrice();
 
-            case 109:
-              _context24.t14 = _context24.sent;
-              gasPrice = new _context24.t13(_context24.t14).div(1e18);
+            case 107:
+              _context24.t12 = _context24.sent;
+              gasPrice = new _context24.t11(_context24.t12).div(1e18);
               expectedGasFee = gasPrice.mul(expectedGasAmount);
               borrower.predictions.push("Gas Amount = " + expectedGasAmount + ", Gas Fee = " + expectedGasFee.toFormat(8) + " ETH"); // Calculate expected profit after gas fees
 
@@ -1259,28 +1257,28 @@ App = {
                 return '<li key="' + i + '">' + tx + '</li>';
               }) + "</ul>\n          </td>\n          <td><button type=\"button\" class=\"btn btn-info btn-sm button-liquidate\">Liquidate</button></td>\n        </tr>";
 
+            case 117:
+              _context24.next = 66;
+              break;
+
             case 119:
-              _context24.next = 68;
+              _context24.next = 124;
               break;
 
             case 121:
-              _context24.next = 126;
-              break;
+              _context24.prev = 121;
+              _context24.t13 = _context24["catch"](64);
 
-            case 123:
-              _context24.prev = 123;
-              _context24.t15 = _context24["catch"](66);
+              _iterator.e(_context24.t13);
 
-              _iterator.e(_context24.t15);
-
-            case 126:
-              _context24.prev = 126;
+            case 124:
+              _context24.prev = 124;
 
               _iterator.f();
 
-              return _context24.finish(126);
+              return _context24.finish(124);
 
-            case 129:
+            case 127:
               $('.pool-detailed-table-liquidations tbody').html(html); // Switch pages
 
               $('#page-pools').hide();
@@ -1859,12 +1857,12 @@ App = {
                 }, _callee23, this);
               })));
 
-            case 138:
+            case 136:
             case "end":
               return _context24.stop();
           }
         }
-      }, _callee24, this, [[66, 123, 126, 129], [91, 103]]);
+      }, _callee24, this, [[64, 121, 124, 127], [89, 101]]);
     })));
   }
 };

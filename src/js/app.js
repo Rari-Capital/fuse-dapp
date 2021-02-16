@@ -631,7 +631,7 @@ App = {
       // Set pool details/stats
       $('.pool-detailed-creator').text($(this).data("creator"));
       $('.pool-detailed-close-factor').text((new Big(await comptrollerInstance.methods.closeFactorMantissa().call())).div(1e18).toFormat(4));
-      $('.pool-detailed-max-assets').text((new Big(await comptrollerInstance.methods.maxAssets().call())).div(1e18).toFormat(4));
+      $('.pool-detailed-max-assets').text(await comptrollerInstance.methods.maxAssets().call());
       $('.pool-detailed-liquidation-incentive').text((new Big(await comptrollerInstance.methods.liquidationIncentiveMantissa().call())).div(1e18).toFormat(4));
       $('.pool-detailed-oracle').text(priceOracleContractName); // Get oracle name from bytecode
       $('.pool-detailed-privacy').text(parseInt($(this).data("privacy")) > 0 ? "Private" : "Public");
